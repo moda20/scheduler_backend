@@ -6,6 +6,9 @@ import { cors } from "@elysiajs/cors";
 import { apiRoutes } from "@api/index";
 import { auth } from "@auth/auth.controller";
 import { jwtAccessSetup, jwtRefreshSetup } from "@auth/guards/setup.jwt";
+import config from "@config/config";
+
+import { start } from "./initialization";
 
 import "@config/database/mongodb.config";
 
@@ -31,10 +34,15 @@ api.use(helmet());
 // Routes
 api.use(auth);
 api.use(apiRoutes);
-api.get("/", () => "Welcome to Elysia!");
+api.get("/", () => "Server is working");
 
-api.listen(process.env.PORT || 8080);
+start().then(() => {
+  api.listen({
+    port: config.get("server.port") as number,
+    hostname: config.get("server.ip") as string,
+  });
+});
 
 console.log(
-  `🦊 Elysia is running at ${api.server?.hostname}:${process.env.PORT || 8080}`,
+  `🦊 Server is running at ${api.server?.hostname}:${process.env.PORT || 8080}`,
 );

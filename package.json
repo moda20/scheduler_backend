@@ -15,13 +15,19 @@
     "@elysiajs/cookie": "^0.8.0",
     "@elysiajs/cors": "^0.7.1",
     "@elysiajs/jwt": "^1.0.2",
+    "@supercharge/promise-pool": "^3.2.0",
     "colors": "^1.4.0",
+    "convict": "^6.2.4",
+    "convict-format-with-validator": "^6.2.0",
     "elysia": "^1.0.13",
     "elysia-helmet": "^1.0.1",
-    "mongoose": "^7.6.2"
+    "mongoose": "^7.6.2",
+    "schedule-manager": "github:moda20/node-schedule-manager#Feature/add_logstats"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
+    "@types/convict": "^6.1.6",
+    "@types/convict-format-with-validator": "^6.0.5",
     "@typescript-eslint/eslint-plugin": "^6.8.0",
     "@typescript-eslint/parser": "^6.8.0",
     "bun-types": "latest",
