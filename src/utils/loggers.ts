@@ -33,7 +33,9 @@ const JobLogger = (id: string, name: string) => {
         file: `./src/logs/jobs/job_log_${name}_${id}.log`,
         siz: '7m',
         frequency: 604800000, // 7 days
-        limit: 10
+        limit: {
+          count: 10
+        }
       }
     },
     config.get("env") === "development" && {
