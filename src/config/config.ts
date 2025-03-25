@@ -23,6 +23,12 @@ const config = convict({
       default: 8080,
       env: "PORT",
     },
+    logToConsole: {
+      doc: "Whether to log to console.",
+      format: Boolean,
+      default: true,
+      env: "LOG_TO_CONSOLE",
+    },
   },
   exportOutputFiles: {
     doc: "Whether to export output files.",
@@ -94,6 +100,20 @@ const config = convict({
       format: String,
       default: null,
       env: "GRAFANA_LOKI_URL",
+      nullable: true,
+    },
+    username: {
+      doc: "The grafana loki username.",
+      format: String,
+      default: null,
+      env: "GRAFANA_LOKI_USERNAME",
+      nullable: true,
+    },
+    password: {
+      doc: "The grafana loki password.",
+      format: String,
+      default: null,
+      env: "GRAFANA_LOKI_PASSWORD",
       nullable: true,
     },
   },
