@@ -1,19 +1,27 @@
-// @ts-ignore
 import { JobDTO } from "@typesDef/models/job";
 import currentRunsManager from "@utils/CurrentRunsManager";
 import logger, { JobLogger } from "@utils/loggers";
-import { ScheduleJobLogEventBus, ScheduleJobManager } from "schedule-manager";
+import schedulerManager from "schedule-manager";
+const { ScheduleJobEventBus, ScheduleJobLogEventBus, ScheduleJobManager } =
+  schedulerManager;
 
-const startAllJobs = (): Promise<{ success: boolean }> => {
+const startAllJobs = () => {
   return ScheduleJobManager.getJobsByStatus(["STOPPED", "STARTED"]).then(
-    ({ result, jobs }: { result: any; jobs: JobDTO[] }) =>
-      Promise.all(
-        jobs.map((job: JobDTO) => {
-          ScheduleJobManager.startJobById(job.getId()).then(
+    ({ jobs, err }) => {
+      if (!jobs) {
+        throw new Error("No jobs found", {
+          cause: err,
+        });
+      }
+      return Promise.all(
+        jobs.map((job) => {
+          ScheduleJobManager.startJobById(job.getId()!).then(
             (d: { success: boolean }) => {
-              if (d.success) {
+              if (d.success && job.getId()) {
                 registerJobStartAndEndActions(job);
-                return saveJobLogs(job.getId(), job.getName()).then(() => d);
+                return saveJobLogs(job.getId()!.toString(), job.getName()).then(
+                  () => d,
+                );
               } else {
                 logger.error("Error when starting Job");
                 logger.error(d);
@@ -21,11 +29,12 @@ const startAllJobs = (): Promise<{ success: boolean }> => {
             },
           );
         }),
-      ),
+      );
+    },
   );
 };
 
-const registerJobStartAndEndActions = (job: JobDTO) => {
+export const registerJobStartAndEndActions = (job: JobDTO) => {
   logger.info(`Registering jobs ${job.getName()}`);
   if (currentRunsManager.initialized[job.getName()]) {
     return; // Already initialized;
@@ -45,24 +54,47 @@ const registerJobStartAndEndActions = (job: JobDTO) => {
   currentRunsManager.initialized[job.getName()] = true;
 };
 
-const saveJobLogs = (id: string, name: string) => {
+export const unsubscribeFromAllLogs = (id: number) => {
+  ScheduleJobLogEventBus.removeAllListeners(id.toString());
+  return { success: true };
+};
+
+export const deleteJobStartAndEndActions = (job: JobDTO) => {
+  if (currentRunsManager.initialized[job.getName()]) {
+    ScheduleJobEventBus.off(
+      "scheduleJob:" + job.getName(),
+      (startedJob: JobDTO) => {
+        currentRunsManager.startJob(startedJob);
+      },
+    );
+    ScheduleJobEventBus.off(
+      "completed:" + job.getName(),
+      (endedJob: JobDTO) => {
+        currentRunsManager.endJob(endedJob);
+      },
+    );
+    delete currentRunsManager.initialized[job.getName()];
+  }
+};
+
+export const saveJobLogs = (id: string, name: string) => {
   try {
-    const logId = "jobLog:" + uniqueId;
-    const errorId = "error:" + uniqueId;
+    const logId = "jobLog:" + id;
+    const errorId = "error:" + id;
     ScheduleJobLogEventBus.removeAllListeners(logId);
     ScheduleJobLogEventBus.removeAllListeners(errorId);
-    ScheduleJobLogEventBus.on(logId, (data) => {
-      JobLogger(uniqueId, name).info(data);
+    ScheduleJobLogEventBus.on(logId, (data: any) => {
+      JobLogger(id.toString(), name).info(data);
     });
-    ScheduleJobLogEventBus.on(errorId, (data) => {
-      JobLogger(uniqueId, name).info(data);
+    ScheduleJobLogEventBus.on(errorId, (data: any) => {
+      JobLogger(id.toString(), name).info(data);
       //notifyOfJobCrash(name, data?.toString()) TODO implement crash notification
     });
     return Promise.resolve(true);
   } catch (err) {
     logger.error("error subscribing to logs for saving");
     logger.error(err);
-    return Promise.reject(new Error(err));
+    return Promise.reject(err);
   }
 };
 

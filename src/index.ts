@@ -7,8 +7,9 @@ import { apiRoutes } from "@api/index";
 import { auth } from "@auth/auth.controller";
 import { jwtAccessSetup, jwtRefreshSetup } from "@auth/guards/setup.jwt";
 import config from "@config/config";
+import logger from "@utils/loggers";
 
-import { start } from "./initialization";
+import { initialize } from "./initialization";
 
 import "@config/database/mongodb.config";
 
@@ -21,8 +22,8 @@ api.use(jwtAccessSetup).use(jwtRefreshSetup).use(cookie());
 //Security;
 api.use(
   cors({
-    origin: process.env.CORS_ORIGIN || "*",
-    credentials: true,
+    origin: () => true,
+    credentials: false,
     exposedHeaders: process.env.CORS_EXPOSED_HEADERS || "*",
     allowedHeaders: process.env.CORS_ALLOWED_HEADER || "*",
     // @ts-ignore
@@ -36,13 +37,18 @@ api.use(auth);
 api.use(apiRoutes);
 api.get("/", () => "Server is working");
 
-start().then(() => {
-  api.listen({
-    port: config.get("server.port") as number,
-    hostname: config.get("server.ip") as string,
+initialize()
+  .then(() => {
+    api.listen({
+      port: config.get("server.port") as number,
+      hostname: config.get("server.ip") as string,
+    });
+    logger.info(
+      `🦊 Server is running at ${api.server?.hostname}:${process.env.PORT || 8080}`,
+    );
+  })
+  .catch((err) => {
+    logger.error("Error initializing the server");
+    logger.error(err);
+    return api.stop();
   });
-});
-
-console.log(
-  `🦊 Server is running at ${api.server?.hostname}:${process.env.PORT || 8080}`,
-);

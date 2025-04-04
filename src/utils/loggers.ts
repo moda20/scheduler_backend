@@ -25,8 +25,8 @@ const JobLogger = (id: string, name: string) => {
     uniqueId: id,
   };
   const transports = <TransportTargetOptions[]>[
-    lokiTransport,
-    {
+    config.get("grafana.lokiUrl") && lokiTransport,
+    config.get("files.exportJobLogsToFiles") && {
       target: "pino-roll",
       options: {
         file: `./src/logs/jobs/job_log_${name}_${id}.log`,
@@ -58,9 +58,9 @@ const generalLogger = pino(
         options: { destination: "./src/logs/info.log", mkdir: true },
       },
       config.get("server.logToConsole") && {
-        target: "pino/file",
+        target: "pino-pretty",
         level: "error",
-        options: { destination: 1 },
+        options: { destination: 1, colorize: true, ignore: "pid,hostname" },
       },
       config.get("server.logToConsole") && {
         target: "pino-pretty",

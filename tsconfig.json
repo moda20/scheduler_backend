@@ -34,11 +34,18 @@
       "@auth/*": ["./src/auth/*"],
       "@config/*": ["./src/config/*"],
       "@constants/*": ["./src/constants/*"],
+      "@initialization/*": ["./src/initialization/*"],
+      "@repositories/*": ["./src/repositories/*"],
+      "@generated/*": ["./src/generated/*"],
       "@utils/*": ["./src/utils/*"],
-      "@typesDef/*": ["./src/types/*"]
+      "@typesDef/*": ["./src/types/*"],
+      "@jobConsumer/*": ["./src/jobConsumer/*"]
     } /* Specify a set of entries that re-map imports to additional lookup locations. */,
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
-    // "typeRoots": [],                                  /* Specify multiple folders that act like './node_modules/@types'. */
+    "typeRoots": [
+      "src/types",
+      "node_modules/@types"
+    ],                                  /* Specify multiple folders that act like './node_modules/@types'. */
     "types": [
       "bun-types"
     ] /* Specify type package names to be included without being referenced in a source file. */,
@@ -109,5 +116,5 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }

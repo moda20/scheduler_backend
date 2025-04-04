@@ -6,30 +6,30 @@ export default {
     console.log("starting job", job.getName());
     if (this.runningJobs[job.getName()]) {
       this.runningJobs[job.getName()][
-        job.getUniqueSingularId() ?? job.getId()
+        job.getUniqueSingularId() ?? job.getId()!
       ] = job;
     } else {
       this.runningJobs[job.getName()] = {
-        [job.getUniqueSingularId() ?? job.getId()]: job,
+        [job.getUniqueSingularId() ?? job.getId()!]: job,
       };
     }
   },
   endJob(job: JobDTO) {
     if (this.runningJobs[job.getName()]) {
       delete this.runningJobs[job.getName()][
-        job.getUniqueSingularId() ?? job.getId()
+        job.getUniqueSingularId() ?? job.getId()!
       ];
     }
   },
-  isRunning(job: JobDTO) {
-    if (!this.runningJobs[job.getName()]) return false;
-    return this.runningJobs[job.getName()];
+  isRunning(job: JobDTO): boolean {
+    return !!this.runningJobs[job.getName()];
+  },
+  isInitialized(job: JobDTO): boolean {
+    return !!this.initialized[job.getName()];
   },
   getRunningJobCount() {
-    return {
-      runningJobsCount: Object.values(this.runningJobs).filter(
-        (e) => Object.values(e).length > 0,
-      ).length,
-    };
+    return Object.values(this.runningJobs).filter(
+      (e) => Object.values(e).length > 0,
+    ).length;
   },
 };
