@@ -142,6 +142,4 @@ const config = convict({
   },
 });
 
-config.loadFile("./config.json");
-
 export default config;

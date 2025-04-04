@@ -1,12 +1,4 @@
 -- CreateTable
-CREATE TABLE IF NOT EXISTS `SequelizeMeta` (
-    `name` VARCHAR(255) NOT NULL,
-
-    UNIQUE INDEX `name`(`name`),
-    PRIMARY KEY (`name`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE IF NOT EXISTS `cache_files` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `job_log_id` VARCHAR(255) NOT NULL,
