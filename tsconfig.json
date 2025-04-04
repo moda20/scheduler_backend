@@ -39,7 +39,9 @@
       "@generated/*": ["./src/generated/*"],
       "@utils/*": ["./src/utils/*"],
       "@typesDef/*": ["./src/types/*"],
-      "@jobConsumer/*": ["./src/jobConsumer/*"]
+      "@jobConsumer/*": ["./src/jobConsumer/*"],
+      "@notifications/*": ["./src/notifications/*"],
+      "@external/*": ["./src/external/*"]
     } /* Specify a set of entries that re-map imports to additional lookup locations. */,
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     "typeRoots": [

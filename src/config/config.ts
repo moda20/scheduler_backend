@@ -132,6 +132,13 @@ const config = convict({
       env: "BROWSERLESS_TOKEN",
       nullable: true,
     },
+    timeout: {
+      doc: "The browserless Timeout",
+      format: Number,
+      default: 360000,
+      env: "BROWSERLESS_TIMEOUT",
+      nullable: false,
+    },
   },
 });
 
