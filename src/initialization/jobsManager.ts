@@ -88,7 +88,15 @@ export const saveJobLogs = (id: string, name: string) => {
     });
     ScheduleJobLogEventBus.on(errorId, (data: any) => {
       JobLogger(id.toString(), name).info(data);
-      //notifyOfJobCrash(name, data?.toString()) TODO implement crash notification
+      const targetConsumer = ScheduleJobManager.runningJob.find(
+        (j) =>
+          (j.job.getUniqueSingularId() ?? j.job.getId())?.toString() === id,
+      )?.consumer;
+      targetConsumer.notification.sendJobCrashNotification(
+        id,
+        name,
+        data?.toString(),
+      );
     });
     return Promise.resolve(true);
   } catch (err) {

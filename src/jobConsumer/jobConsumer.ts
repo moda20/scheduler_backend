@@ -6,16 +6,20 @@ import { exportCacheFiles, exportResultsToFile } from "@utils/jobUtils";
 import { injectProxy } from "@utils/proxyUtils";
 import type { AxiosInstance } from "axios";
 import scheduleManager from "schedule-manager";
+
+import { GotifyService } from "../notifications/gotify";
 const { JobConsumer: Consumer } = scheduleManager;
 
 export class JobConsumer extends Consumer {
   private axios: AxiosInstance;
-  private options: JobOptions | undefined;
+  private options?: JobOptions;
+  notification: GotifyService;
   exportResultsToFile = exportResultsToFile;
   exportCacheFiles = exportCacheFiles;
   constructor() {
     super();
     this.axios = defaultAxiosInstance.create();
+    this.notification = new GotifyService();
   }
 
   async injectProxies() {
