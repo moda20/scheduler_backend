@@ -11,8 +11,6 @@ import logger from "@utils/loggers";
 
 import { initialize } from "./initialization";
 
-import "@config/database/mongodb.config";
-
 const api = new Elysia();
 
 // Setup
@@ -50,5 +48,7 @@ initialize()
   .catch((err) => {
     logger.error("Error initializing the server");
     logger.error(err);
-    return api.stop();
+    if (api.server) {
+      return api.stop();
+    }
   });

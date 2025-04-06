@@ -1,3 +1,4 @@
+import { JobConsumer } from "@jobConsumer/jobConsumer";
 import { JobDTO } from "@typesDef/models/job";
 import currentRunsManager from "@utils/CurrentRunsManager";
 import logger, { JobLogger } from "@utils/loggers";
@@ -91,7 +92,7 @@ export const saveJobLogs = (id: string, name: string) => {
       const targetConsumer = ScheduleJobManager.runningJob.find(
         (j) =>
           (j.job.getUniqueSingularId() ?? j.job.getId())?.toString() === id,
-      )?.consumer;
+      )?.consumer as JobConsumer;
       targetConsumer.notification.sendJobCrashNotification(
         id,
         name,

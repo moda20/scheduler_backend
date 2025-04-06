@@ -1,0 +1,18 @@
+services:
+  scheduler:
+    build:
+      context: .
+      dockerfile: DOCKERFILE
+    container_name: scheduler
+    restart: always
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=host.docker.internal
+      - DB_PORT=3306
+      - DB_USERNAME=root
+      - DB_PASSWORD=
+      - SCHEDULER_DB_NAME=scraper_scheduler
+    ports:
+      - "8080:8080"

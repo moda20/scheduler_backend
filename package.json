@@ -9,7 +9,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",
-    "lint": "eslint --ext .ts src"
+    "lint": "eslint --ext .ts src",
+    "build": "bun build src/index.ts --target=bun --outdir ./build"
   },
   "dependencies": {
     "@elysiajs/cookie": "^0.8.0",
@@ -32,9 +33,9 @@
     "pino-loki": "^2.5.0",
     "pino-pretty": "^13.0.0",
     "pino-roll": "^3.0.0",
+    "prisma": "^6.5.0",
     "qs": "^6.14.0",
-    "schedule-manager": "github:moda20/node-schedule-manager#Feature/typescript_rewrite",
-    "prisma": "^6.5.0"
+    "schedule-manager": "github:moda20/node-schedule-manager#Feature/typescript_rewrite"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
