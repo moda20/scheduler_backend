@@ -1,3 +1,4 @@
+import config from "@config/config";
 import { prisma } from "@initialization/index";
 import {
   deleteJobStartAndEndActions,
@@ -19,6 +20,7 @@ import { getNextJobExecution } from "@utils/jobUtils";
 import logger from "@utils/loggers";
 import { Glob } from "bun";
 import dayjs from "dayjs";
+import { join } from "path";
 import manager from "schedule-manager";
 const { ScheduleJobManager } = manager;
 
@@ -228,7 +230,12 @@ export const jobActionExecution = async (
 
 export const getAvailableConsumers = async () => {
   const consumers: string[] = [];
-  const glob = new Glob("src/jobs/**/*.ts");
+  const targetPath = join(
+    "src/jobs",
+    config.get("jobs.targetFolderForJobs"),
+    `**/*.{${config.get("jobs.jobsFileExtensions")}}`,
+  );
+  const glob = new Glob(targetPath);
 
   for (const file of glob.scanSync(".")) {
     consumers.push("/" + file);

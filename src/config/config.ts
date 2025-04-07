@@ -30,6 +30,21 @@ const config = convict({
       env: "LOG_TO_CONSOLE",
     },
   },
+  jobs: {
+    targetFolderForJobs: {
+      doc: "The target directory for jobs inside the jobs/ folder",
+      format: String,
+      default: "",
+      env: "JOBS_SUB_DIRECTORY",
+    },
+    jobsFileExtensions: {
+      doc: "The extension of files to be considered as jobs: only accepts .ts and .js files",
+      format: String,
+      default: "ts,js",
+      env: "JOBS_FILES_EXTENSIONS",
+      nullable: false,
+    },
+  },
   exportOutputFiles: {
     doc: "Whether to export output files.",
     format: Boolean,
