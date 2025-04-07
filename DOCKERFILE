@@ -22,9 +22,10 @@ COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
 # [optional] tests & build
-ENV NODE_ENV=production
+ENV NODE_ENV=development
 RUN bun install --frozen-lockfile
 RUN bun test
+RUN bun install schedule-manager # added an extra install for the scheduler package as it is being ignored in the install commands above TODO: investigate why this is happening
 RUN bun run build
 
 # copy production dependencies and source code into final image
