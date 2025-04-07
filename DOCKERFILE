@@ -7,12 +7,12 @@ WORKDIR /usr/src/app
 # this will cache them and speed up future builds
 FROM base AS install
 RUN mkdir -p /temp/dev
-COPY package.json bun.lockb /temp/dev/
+COPY package.json bun.lock /temp/dev/
 RUN cd /temp/dev && bun install --frozen-lockfile
 
 # install with --production (exclude devDependencies)
 RUN mkdir -p /temp/prod
-COPY package.json bun.lockb /temp/prod/
+COPY package.json bun.lock /temp/prod/
 RUN cd /temp/prod && bun install --frozen-lockfile --production
 
 # copy node_modules from temp directory
@@ -23,9 +23,7 @@ COPY . .
 
 # [optional] tests & build
 ENV NODE_ENV=development
-RUN bun install --frozen-lockfile
 RUN bun test
-RUN bun install schedule-manager # added an extra install for the scheduler package as it is being ignored in the install commands above TODO: investigate why this is happening
 RUN bun run build
 
 # copy production dependencies and source code into final image
@@ -35,6 +33,6 @@ COPY --from=prerelease /usr/src/app/. .
 COPY --from=prerelease /usr/src/app/package.json .
 
 # run the app
-# USER bun # TODO Investigate usign teh same user for docker, in order to not face permissions issues
+# USER bun # TODO Investigate usign the same user for docker, in order to not face permissions issues
 EXPOSE 8080/tcp
 ENTRYPOINT [ "bun", "run", "src/index.ts" ]
