@@ -5,7 +5,8 @@ import { saveCacheFile } from "@repositories/cacheFiles";
 import { saveNewFile } from "@repositories/outputFiles";
 import logger from "@utils/loggers";
 import cronParser from "cron-parser";
-
+import { readdirSync, statSync } from "fs-extra";
+import path from "path";
 export const Nullable = <T extends TSchema>(T: T) => {
   // type Nullable<T> = T | null
   return t.Union([T, t.Null()]);
@@ -158,4 +159,40 @@ export const toJSON = (param: any): any => {
       (key, value) => (typeof value === "bigint" ? value.toString() : value), // return everything else unchanged
     ),
   );
+};
+
+/**
+ * Find files recursively
+ * @param dir
+ * @param ext
+ * @param files
+ * @param result
+ * @param regex
+ */
+
+export const findFiles = (
+  dir: string,
+  ext: string[],
+  regex?: RegExp,
+  files?: string[],
+  result?: string[],
+): string[] => {
+  files = files || readdirSync(dir);
+  result = result || [];
+  regex = regex || new RegExp(`^.*\\.(${ext?.join("|")})$`);
+  for (let i = 0; i < files.length; i++) {
+    const file = path.join(dir, files[i]);
+    if (statSync(file).isDirectory() && !path.extname(file)) {
+      try {
+        result = findFiles(file, ext, regex, readdirSync(file), result);
+      } catch (error) {
+        continue;
+      }
+    } else {
+      if (regex.test(file)) {
+        result.push(`/${file}`);
+      }
+    }
+  }
+  return result;
 };

@@ -16,7 +16,7 @@ import {
 } from "@typesDef/models/job";
 import currentRunsManager from "@utils/CurrentRunsManager";
 import { lokiHttpService } from "@utils/httpRequestConfig";
-import { getNextJobExecution } from "@utils/jobUtils";
+import { findFiles, getNextJobExecution } from "@utils/jobUtils";
 import logger from "@utils/loggers";
 import { Glob } from "bun";
 import dayjs from "dayjs";
@@ -229,18 +229,11 @@ export const jobActionExecution = async (
 };
 
 export const getAvailableConsumers = async () => {
-  const consumers: string[] = [];
-  const targetPath = join(
-    "src/jobs",
-    config.get("jobs.targetFolderForJobs"),
-    `**/*.{${config.get("jobs.jobsFileExtensions")}}`,
+  const targetPath = join("src/jobs", config.get("jobs.targetFolderForJobs"));
+  return findFiles(
+    targetPath,
+    config.get("jobs.jobsFileExtensions").split(","),
   );
-  const glob = new Glob(targetPath);
-
-  for (const file of glob.scanSync(".")) {
-    consumers.push("/" + file);
-  }
-  return consumers;
 };
 
 export const isJobRunning = async (jobId: number) => {

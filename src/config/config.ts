@@ -51,6 +51,44 @@ const config = convict({
     default: false,
     env: "EXPORT_OUTPUT_FILE",
   },
+  files: {
+    exportOutputFiles: {
+      doc: "Whether to export output files.",
+      format: Boolean,
+      default: false,
+      env: "EXPORT_OUTPUT_FILE",
+    },
+    exportCacheFiles: {
+      doc: "Whether to export cache files.",
+      format: Boolean,
+      default: false,
+      env: "EXPORT_CACHE_FILE",
+    },
+    exportJobLogsToFiles: {
+      doc: "Whether to export job logs to files.",
+      format: Boolean,
+      default: false,
+      env: "EXPORT_JOB_LOGS_TO_FILES",
+    },
+    cacheFilesRootPath: {
+      doc: "The root path for cache files.",
+      format: String,
+      default: "caches",
+      env: "CACHE_FILES_ROOT_PATH",
+    },
+    outputFilesRootPath: {
+      doc: "The root path for output files.",
+      format: String,
+      default: "exported",
+      env: "OUTPUT_FILES_ROOT_PATH",
+    },
+    databaseBackupRootPath: {
+      doc: "The root path for database backup files.",
+      format: String,
+      default: "db",
+      env: "DB_BACKUP_FILES_ROOT_PATH",
+    },
+  },
   DB: {
     host: {
       doc: "The database host.",

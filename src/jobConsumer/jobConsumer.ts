@@ -1,4 +1,5 @@
 import config from "@config/config";
+import { GotifyService } from "@notifications/gotify";
 import { JobDTO, JobLogDTO, JobOptions } from "@typesDef/models/job";
 import defaultAxiosInstance from "@utils/httpRequestConfig";
 import * as jobConsumerUtils from "@utils/jobConsumerUtils";
@@ -6,8 +7,6 @@ import { exportCacheFiles, exportResultsToFile } from "@utils/jobUtils";
 import { injectProxy } from "@utils/proxyUtils";
 import type { AxiosInstance } from "axios";
 import scheduleManager from "schedule-manager";
-
-import { GotifyService } from "../notifications/gotify";
 const { JobConsumer: Consumer } = scheduleManager;
 
 export class JobConsumer extends Consumer {

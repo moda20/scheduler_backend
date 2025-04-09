@@ -31,6 +31,9 @@ FROM base AS release
 COPY --from=install /temp/prod/node_modules node_modules
 COPY --from=prerelease /usr/src/app/. .
 COPY --from=prerelease /usr/src/app/package.json .
+RUN bun install -g typescript
+RUN bun install bun-types
+RUN tsc --project tsTypesconfig.json || true
 
 # run the app
 # USER bun # TODO Investigate usign the same user for docker, in order to not face permissions issues

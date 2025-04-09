@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "outFile": "./extraTypes/types.d.ts",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "strict": false,
+    "module": "ES2022",
+    "target": "ES2022",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "types": [
+
+    ],
+    "typeRoots": [
+      "src/types",
+      "./node_modules/schedule-manager/dist"
+    ],
+    "paths": {
+      "@api/*": ["./src/api/*"],
+      "@auth/*": ["./src/auth/*"],
+      "@config/*": ["./src/config/*"],
+      "@constants/*": ["./src/constants/*"],
+      "@initialization/*": ["./src/initialization/*"],
+      "@repositories/*": ["./src/repositories/*"],
+      "@generated/*": ["./src/generated/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@typesDef/*": ["./src/types/*"],
+      "@jobConsumer/*": ["./src/jobConsumer/*"],
+      "@notifications/*": ["./src/notifications/*"]
+    },
+    "skipLibCheck": true
+  },
+  "include": ["src/types/**/*.ts", "node_modules/schedule-manager/dist/index.d.ts"]
+
+}
