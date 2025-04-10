@@ -10,8 +10,8 @@ import scheduleManager from "schedule-manager";
 const { JobConsumer: Consumer } = scheduleManager;
 
 export class JobConsumer extends Consumer {
-  private axios: AxiosInstance;
-  private options?: JobOptions;
+  public axios: AxiosInstance;
+  public options?: JobOptions;
   notification: GotifyService;
   exportResultsToFile = exportResultsToFile;
   exportCacheFiles = exportCacheFiles;
