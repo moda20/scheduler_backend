@@ -27,7 +27,8 @@
       "@utils/*": ["./src/utils/*"],
       "@typesDef/*": ["./src/types/*"],
       "@jobConsumer/*": ["./src/jobConsumer/*"],
-      "@notifications/*": ["./src/notifications/*"]
+      "@notifications/*": ["./src/notifications/*"],
+      "@external/*": ["./src/external/*"]
     },
     "skipLibCheck": true
   },

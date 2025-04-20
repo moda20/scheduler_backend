@@ -1,4 +1,5 @@
 import config from "@config/config";
+import logger from "@utils/loggers";
 import schedulerManager from "schedule-manager";
 
 import { startAllJobs } from "./jobsManager";
@@ -17,10 +18,15 @@ export async function start() {
 
   if (initResult.success) {
     const jobsStartResults = await startAllJobs();
-    console.log(jobsStartResults);
+    logger.info("scheduler jobs started successfully");
+    logger.info(`${jobsStartResults.stats.foundJobs} jobs found`);
+    logger.info(`${jobsStartResults.stats.startedJobs} jobs started`);
+    logger.info(
+      `${jobsStartResults.stats.errorStartingJobs} jobs failed to start`,
+    );
     return { initResult, jobsStartResults };
   } else {
-    console.log(initResult);
+    logger.error(initResult);
     throw "Error when initializing scheduler";
   }
 }

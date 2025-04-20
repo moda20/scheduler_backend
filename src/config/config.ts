@@ -125,8 +125,9 @@ const config = convict({
     url: {
       doc: "The gotify url.",
       format: String,
-      default: "https://gotify.example.com",
+      default: null,
       env: "GOTIFY_URL",
+      nullable: true,
     },
     token: {
       doc: "The gotify token.",
@@ -137,14 +138,16 @@ const config = convict({
     appToken: {
       doc: "The gotify app token.",
       format: String,
-      default: "appToken",
+      default: null,
       env: "GOTIFY_APP_TOKEN",
+      nullable: true,
     },
     appErrorChannelToken: {
       doc: "The gotify app error channel token.",
       format: String,
-      default: "appErrorChannelToken",
+      default: null,
       env: "GOTIFY_ERROR_APP_TOKEN",
+      nullable: true,
     },
   },
   grafana: {

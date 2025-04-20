@@ -5,15 +5,13 @@ import type { LokiOptions } from "pino-loki";
 const JobLokiTransportTemplate = {
   target: "pino-loki",
   options: <LokiOptions>{
-    batching: false,
-    interval: 5,
-
+    batching: true,
     host: config.get("grafana.lokiUrl") || "",
     basicAuth: {
       username: config.get("grafana.username") || "",
       password: config.get("grafana.password") || "",
     },
-    propsToLabels: ["level"],
+    formattingTemplate: "${log.timeParsed} | ${log.levelParsed} | ${log.msg}",
   },
 };
 

@@ -1,5 +1,5 @@
 import { JobConsumer } from "@jobConsumer/jobConsumer";
-import { JobDTO } from "@typesDef/models/job";
+import { JobDTO, jobStatus } from "@typesDef/models/job";
 import currentRunsManager from "@utils/CurrentRunsManager";
 import logger, { JobLogger } from "@utils/loggers";
 import schedulerManager from "schedule-manager";
@@ -14,23 +14,49 @@ const startAllJobs = () => {
           cause: err,
         });
       }
+      const jobStats = {
+        startedJobs: 0,
+        foundJobs: 0,
+        errorStartingJobs: 0,
+      };
       return Promise.all(
         jobs.map((job) => {
-          ScheduleJobManager.startJobById(job.getId()!).then(
-            (d: { success: boolean }) => {
-              if (d.success && job.getId()) {
-                registerJobStartAndEndActions(job);
-                return saveJobLogs(job.getId()!.toString(), job.getName()).then(
-                  () => d,
-                );
-              } else {
-                logger.error("Error when starting Job");
-                logger.error(d);
-              }
-            },
-          );
+          jobStats.foundJobs++;
+          if (job.getStats() === jobStatus.STARTED) {
+            return ScheduleJobManager.startJobById(job.getId()!)
+              .then((d: { success: boolean }) => {
+                if (d.success && job.getId()) {
+                  registerJobStartAndEndActions(job);
+                  return saveJobLogs(
+                    job.getId()!.toString(),
+                    job.getName(),
+                  ).then(() => d);
+                } else {
+                  logger.error("Error when starting Job");
+                  logger.error(d);
+                  jobStats.errorStartingJobs++;
+                  return d;
+                }
+              })
+              .then((jobStatus) => {
+                if (jobStatus.success) {
+                  jobStats.startedJobs++;
+                }
+                return jobStatus;
+              });
+          } else {
+            return Promise.resolve({
+              name: job.name,
+              result: null,
+            });
+          }
         }),
-      );
+      ).then((jobResults) => {
+        return {
+          stats: jobStats,
+          results: jobResults,
+        };
+      });
     },
   );
 };
@@ -93,7 +119,7 @@ export const saveJobLogs = (id: string, name: string) => {
         (j) =>
           (j.job.getUniqueSingularId() ?? j.job.getId())?.toString() === id,
       )?.consumer as JobConsumer;
-      targetConsumer.notification.sendJobCrashNotification(
+      targetConsumer?.notification?.sendJobCrashNotification(
         id,
         name,
         data?.toString(),

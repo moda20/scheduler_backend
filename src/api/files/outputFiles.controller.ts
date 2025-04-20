@@ -52,12 +52,12 @@ export const outputFilesController = createElysia({ prefix: "/files" })
     "/downloadCacheFile",
     async ({ query }) => {
       const { id, fileName } = query;
-      const filePath = await getCacheFilePath({ id, fileName });
+      const filePath = await getCacheFilePath({ id: Number(id), fileName });
       return file(filePath);
     },
     {
       query: t.Object({
-        id: t.Number(),
+        id: t.Union([t.Number(), t.String()]),
         fileName: t.String(),
       }),
     },
@@ -66,12 +66,12 @@ export const outputFilesController = createElysia({ prefix: "/files" })
     "/downloadOutputFile",
     async ({ query }) => {
       const { id, fileName } = query;
-      const filePath = await getOutputFilePath({ id, fileName });
+      const filePath = await getOutputFilePath({ id: Number(id), fileName });
       return file(filePath);
     },
     {
       query: t.Object({
-        id: t.Number(),
+        id: t.Union([t.Number(), t.String()]),
         fileName: t.String(),
       }),
     },
@@ -80,11 +80,11 @@ export const outputFilesController = createElysia({ prefix: "/files" })
     "/deleteCacheFile",
     async ({ query }) => {
       const { id, fileName } = query;
-      return await deleteCacheFile({ id, fileName });
+      return await deleteCacheFile({ id: Number(id), fileName });
     },
     {
       query: t.Object({
-        id: t.Number(),
+        id: t.Union([t.Number(), t.String()]),
         fileName: t.String(),
       }),
     },
@@ -93,11 +93,11 @@ export const outputFilesController = createElysia({ prefix: "/files" })
     "/deleteOutputFile",
     async ({ query }) => {
       const { id, fileName } = query;
-      return await deleteOutputFile({ id, fileName });
+      return await deleteOutputFile({ id: Number(id), fileName });
     },
     {
       query: t.Object({
-        id: t.Number(),
+        id: t.Union([t.Number(), t.String()]),
         fileName: t.String(),
       }),
     },

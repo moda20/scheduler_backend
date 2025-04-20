@@ -60,7 +60,7 @@ export const getAllJobs = async ({
     orderBy: sort
       ?.filter((e) => jobAttributeMap[e.id])
       .map((e) => ({
-        [jobAttributeMap[e.id]]: e.desc,
+        [jobAttributeMap[e.id]]: e.desc === "true" ? "desc" : "asc",
       })),
     include: {
       job_logs: {

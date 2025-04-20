@@ -23,7 +23,7 @@ const runMigrations = () => {
     const dbUrl = `mysql://${config.get("DB.username")}:${config.get("DB.password")}@${config.get("DB.host")}:${config.get("DB.port")}/${config.get("DB.schedulerDatabaseName")}`;
     let statusOutput;
     try {
-      statusOutput = execSync("npx prisma migrate status -- -y", {
+      statusOutput = execSync("prisma migrate status -- -y", {
         env: { ...process.env, DATABASE_URL: dbUrl },
         stdio: "pipe",
       }).toString();
@@ -47,6 +47,7 @@ const runMigrations = () => {
         })?.toString();
         logger.info("Migrations applied successfully.");
       } catch (err: any) {
+        console.log("err", err);
         if (err.status === 1) {
           logger.info("migrations applied");
         } else {
@@ -57,6 +58,7 @@ const runMigrations = () => {
       logger.info("No pending migrations.");
     }
   } catch (error) {
+    console.log("error", error);
     logger.error("Error applying migrations:", error);
   }
 };

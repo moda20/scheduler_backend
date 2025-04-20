@@ -1,7 +1,7 @@
 import { t, TSchema } from "elysia";
 
 import config from "@config/config";
-import { saveCacheFile } from "@repositories/cacheFiles";
+import { getCacheFile, saveCacheFile } from "@repositories/cacheFiles";
 import { saveNewFile } from "@repositories/outputFiles";
 import logger from "@utils/loggers";
 import cronParser from "cron-parser";
@@ -104,7 +104,7 @@ export const exportResultsToFile = async ({
  * @async
  */
 export const exportCacheFiles = async ({
-  results,
+  data,
   fileName,
   job_log_id,
   tags,
@@ -112,7 +112,7 @@ export const exportCacheFiles = async ({
   ttl = 24 * 60 * 60,
   newFile = true,
 }: {
-  results: any;
+  data: any;
   fileName: string;
   job_log_id: string;
   tags?: any;
@@ -125,7 +125,7 @@ export const exportCacheFiles = async ({
     return;
   }
   const existingFile = {
-    result: results,
+    result: data,
     time: new Date().toDateString(),
   };
   const finalTags = Array.isArray(tags) ? tags.join(",") : tags?.toString();
@@ -145,6 +145,12 @@ export const exportCacheFiles = async ({
       logger.error(`error saving cache file ${fileName}\n`);
       logger.error(err);
     });
+};
+
+export const getFromCache = async (fileName: string) => {
+  return getCacheFile({ filename: fileName }).then((file: any) => {
+    return file?.fileData?.toString();
+  });
 };
 
 /**

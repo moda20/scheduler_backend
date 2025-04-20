@@ -22,7 +22,7 @@
         "mongoose": "^7.6.2",
         "mysqldump": "^3.2.0",
         "pino": "^9.6.0",
-        "pino-loki": "^2.5.0",
+        "pino-loki": "github:moda20/pino-loki#dev",
         "pino-pretty": "^13.0.0",
         "pino-roll": "^3.0.0",
         "prisma": "^6.5.0",
@@ -558,7 +558,7 @@
 
     "pino-abstract-transport": ["pino-abstract-transport@2.0.0", "", { "dependencies": { "split2": "^4.0.0" } }, "sha512-F63x5tizV6WCh4R6RHyi2Ml+M70DNRXt/+HANowMflpgGFMAym/VKm6G7ZOQRjqN7XbGxK1Lg9t6ZrtzOaivMw=="],
 
-    "pino-loki": ["pino-loki@2.5.0", "", { "dependencies": { "commander": "^12.1.0", "pino-abstract-transport": "^2.0.0", "pump": "^3.0.2" }, "bin": { "pino-loki": "dist/cli.cjs" } }, "sha512-/QCSukecqbjXWcVB58st0bKJFQiXg4ZEGXslnnMCMbcrDr5LT36XvkS0dy0eBvZvI8bWoh3efjLYLmN+94iLSQ=="],
+    "pino-loki": ["pino-loki@github:moda20/pino-loki#31f12d1", { "dependencies": { "commander": "^12.1.0", "pino-abstract-transport": "^2.0.0", "pump": "^3.0.2" }, "bin": { "pino-loki": "dist/cli.cjs" } }, "moda20-pino-loki-31f12d1"],
 
     "pino-pretty": ["pino-pretty@13.0.0", "", { "dependencies": { "colorette": "^2.0.7", "dateformat": "^4.6.3", "fast-copy": "^3.0.2", "fast-safe-stringify": "^2.1.1", "help-me": "^5.0.0", "joycon": "^3.1.1", "minimist": "^1.2.6", "on-exit-leak-free": "^2.1.0", "pino-abstract-transport": "^2.0.0", "pump": "^3.0.0", "secure-json-parse": "^2.4.0", "sonic-boom": "^4.0.1", "strip-json-comments": "^3.1.1" }, "bin": { "pino-pretty": "bin.js" } }, "sha512-cQBBIVG3YajgoUjo1FdKVRX6t9XPxwB9lcNJVD5GCnNM4Y6T12YYx8c6zEejxQsU0wrg9TwmDulcE9LR7qcJqA=="],
 
@@ -610,7 +610,7 @@
 
     "safer-buffer": ["safer-buffer@2.1.2", "", {}, "sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg=="],
 
-    "schedule-manager": ["schedule-manager@github:moda20/node-schedule-manager#c48f676", { "dependencies": { "app-root-path": "^3.0.0", "ip": "^1.1.5", "moment": "^2.29.1", "mysql": "^2.18.1", "node-cron": "^3.0.0" } }, "moda20-node-schedule-manager-c48f676"],
+    "schedule-manager": ["schedule-manager@github:moda20/node-schedule-manager#b4d5195", { "dependencies": { "app-root-path": "^3.0.0", "ip": "^1.1.5", "moment": "^2.29.1", "mysql": "^2.18.1", "node-cron": "^3.0.0" } }, "moda20-node-schedule-manager-b4d5195"],
 
     "secure-json-parse": ["secure-json-parse@2.7.0", "", {}, "sha512-6aU+Rwsezw7VR8/nyvKTx8QpWH9FrcYiXXlqC4z5d5XQBDRqtbfsRjnwGyqbi3gddNtWHuEk9OANUotL26qKUw=="],
 

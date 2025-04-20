@@ -65,6 +65,9 @@ export const getCacheFile = async ({ filename }: { filename: string }) => {
       }
       const fileData = await bun.file(fileRow.file_path).text();
       return { fileData, fileRow };
+    })
+    .catch(() => {
+      return null;
     });
 };
 

@@ -1,9 +1,14 @@
 import config from "@config/config";
+import * as BrowserlessService from "@external/browserless";
 import { GotifyService } from "@notifications/gotify";
 import { JobDTO, JobLogDTO, JobOptions } from "@typesDef/models/job";
 import defaultAxiosInstance from "@utils/httpRequestConfig";
 import * as jobConsumerUtils from "@utils/jobConsumerUtils";
-import { exportCacheFiles, exportResultsToFile } from "@utils/jobUtils";
+import {
+  exportCacheFiles,
+  exportResultsToFile,
+  getFromCache,
+} from "@utils/jobUtils";
 import { injectProxy } from "@utils/proxyUtils";
 import type { AxiosInstance } from "axios";
 import scheduleManager from "schedule-manager";
@@ -13,12 +18,24 @@ export class JobConsumer extends Consumer {
   public axios: AxiosInstance;
   public options?: JobOptions;
   notification: GotifyService;
-  exportResultsToFile = exportResultsToFile;
-  exportCacheFiles = exportCacheFiles;
+  public browserless: typeof BrowserlessService;
   constructor() {
     super();
     this.axios = defaultAxiosInstance.create();
     this.notification = new GotifyService();
+    this.browserless = BrowserlessService;
+  }
+
+  getFromCache(...args: Parameters<typeof getFromCache>) {
+    return getFromCache(...args);
+  }
+
+  exportResultsToFile(...args: Parameters<typeof exportResultsToFile>) {
+    return exportResultsToFile(...args);
+  }
+
+  exportCacheFiles(...args: Parameters<typeof exportCacheFiles>) {
+    return exportCacheFiles(...args);
   }
 
   async injectProxies() {
@@ -40,8 +57,7 @@ export class JobConsumer extends Consumer {
       });
   }
 
-  run(job: JobDTO, jobLog: JobLogDTO, options?: JobOptions) {
-    this.options = options;
+  run(job: JobDTO, jobLog: JobLogDTO) {
     return super.run(job, jobLog);
   }
 
@@ -50,10 +66,11 @@ export class JobConsumer extends Consumer {
     this.jobLog = jobLog;
     await this.injectProxies();
     try {
-      return await this.run(job, jobLog, {
+      this.options = {
         utils: jobConsumerUtils,
         config: config,
-      });
+      };
+      return await this.run(job, jobLog);
     } catch (err) {
       this.logEvent(`job ${job.name} crashed with an error ${err?.toString()}`);
       this.logEvent(err, (e) => this.serializeLogs(e, 10));

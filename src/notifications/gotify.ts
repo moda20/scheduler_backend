@@ -8,11 +8,7 @@ export class GotifyService implements Notifications {
     jobId: string,
     jobName: string,
     results: string,
-    {
-      title,
-      message,
-      priority,
-    }: { title: string; message: string; priority: number },
+    options?: { title: string; message: string; priority: number },
   ) {
     const url = config.get("gotify.url");
     const token = config.get("gotify.token");
@@ -20,6 +16,7 @@ export class GotifyService implements Notifications {
       logger.error("Gotify Is not configured to use");
       return Promise.resolve();
     }
+    const { title, message, priority } = options ?? {};
     const urlEncodedResults = encodeURIComponent(results);
     return GotifyHttpService.post("/message", {
       message:

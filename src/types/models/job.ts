@@ -2,6 +2,7 @@ import config from "@config/config";
 import { schedule_job } from "@generated/prisma";
 import * as JobConsumerUtils from "@utils/jobConsumerUtils";
 import { IScheduleJob, IScheduleJobLog } from "schedule-manager";
+import { ScheduleJobTable } from "schedule-manager/dist/Classes/Entities/ScheduleJob";
 
 export interface JobDTO extends IScheduleJob {
   // Properties
@@ -204,6 +205,21 @@ export class JobDTOClass implements JobDTO {
 
   setInitialized(initialized: boolean) {
     this.initialized = initialized;
+  }
+
+  getJobUpdateObject(): ScheduleJobTable {
+    return {
+      job_name: this.name,
+      job_param: this.param,
+      job_cron_setting: this.cronSetting,
+      consumer: this.consumer,
+      exclusive: this.exclusive,
+      status: this.status,
+      average_time: this.averageTime,
+      created_at: this.createdAt,
+      job_id: this.id,
+      latest_run: this.latestRun,
+    };
   }
 }
 
