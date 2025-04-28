@@ -18,11 +18,10 @@ export class GotifyService implements Notifications {
     }
     const envPrefix = config.get("env") === "production" ? "" : "(DEV) ";
     const { title, message, priority } = options ?? {};
-    const urlEncodedResults = encodeURIComponent(results);
     return GotifyHttpService.post("/message", {
       message:
         message ??
-        `${envPrefix}Job ${jobName} finished with results: ${urlEncodedResults}`,
+        `${envPrefix}Job ${jobName} finished with results: ${results}`,
       priority: priority ?? 1,
       title: title ?? `Job ${jobName}${jobId && ` ${jobId} `}finished`,
     }) as Promise<any>;
