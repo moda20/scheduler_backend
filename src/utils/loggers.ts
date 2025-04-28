@@ -1,5 +1,5 @@
 import config from "@config/config";
-import pino, { TransportTargetOptions } from "pino";
+import pino, { Logger, TransportTargetOptions } from "pino";
 import type { LokiOptions } from "pino-loki";
 
 const JobLokiTransportTemplate = {
@@ -15,7 +15,10 @@ const JobLokiTransportTemplate = {
   },
 };
 
+const loggers: { [key: string]: Logger } = {};
+
 const JobLogger = (id: string, name: string) => {
+  if (loggers[id]) return loggers[id];
   const lokiTransport = Object.assign({}, JobLokiTransportTemplate);
   lokiTransport.options.labels = {
     app: "scrap_server",
@@ -33,6 +36,7 @@ const JobLogger = (id: string, name: string) => {
         limit: {
           count: 10,
         },
+        mkdir: true,
       },
     },
     config.get("env") === "development" && {
@@ -40,40 +44,57 @@ const JobLogger = (id: string, name: string) => {
       options: { destination: 1, colorize: true, ignore: "pid,hostname" },
     },
   ].filter((e) => !!e);
-  return pino(
-    pino.transport({
-      targets: transports,
-    }),
-  );
+  const jobTransport = pino.transport({
+    targets: transports,
+  });
+  jobTransport.on("error", (err: any) => {
+    generalLogger.error(`error caught on job transport ${err}`);
+  });
+  jobTransport.on("unhandledRejection", (err: any) => {
+    generalLogger.error(`unhandledRejection caught on job transport ${err}`);
+  });
+  jobTransport.on("uncaughtException", (err: any) => {
+    generalLogger.error(`uncaughtException caught on job transport ${err}`);
+  });
+  jobTransport.on("exit", (err: any) => {
+    generalLogger.error(`exit caught on job transport ${err}`);
+  });
+
+  loggers[id] = pino(jobTransport);
+  return loggers[id];
 };
 
-const generalLogger = pino(
-  pino.transport({
-    targets: <TransportTargetOptions[]>[
-      {
-        target: "pino/file",
-        level: "info",
-        options: { destination: "./src/logs/info.log", mkdir: true },
-      },
-      config.get("server.logToConsole") && {
-        target: "pino-pretty",
-        level: "error",
-        options: { destination: 1, colorize: true, ignore: "pid,hostname" },
-      },
-      config.get("server.logToConsole") && {
-        target: "pino-pretty",
-        level: "info",
-        options: { destination: 1, colorize: true, ignore: "pid,hostname" },
-      },
-      {
-        target: "pino/file",
-        level: "error",
-        options: { destination: "./src/logs/error.log", mkdir: true },
-      },
-    ].filter((e) => !!e),
-    dedupe: true,
-  }),
-);
+const generalTransport = pino.transport({
+  targets: <TransportTargetOptions[]>[
+    {
+      target: "pino/file",
+      level: "info",
+      options: { destination: "./src/logs/info.log", mkdir: true },
+    },
+    config.get("server.logToConsole") && {
+      target: "pino-pretty",
+      level: "error",
+      options: { destination: 1, colorize: true, ignore: "pid,hostname" },
+    },
+    config.get("server.logToConsole") && {
+      target: "pino-pretty",
+      level: "info",
+      options: { destination: 1, colorize: true, ignore: "pid,hostname" },
+    },
+    {
+      target: "pino/file",
+      level: "error",
+      options: { destination: "./src/logs/error.log", mkdir: true },
+    },
+  ].filter((e) => !!e),
+  dedupe: true,
+});
+
+generalTransport.on("error", (err: any) => {
+  console.error("error caught in general logger", err);
+});
+
+const generalLogger = pino(generalTransport);
 
 export default generalLogger;
 export { JobLogger };

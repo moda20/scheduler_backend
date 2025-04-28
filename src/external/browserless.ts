@@ -14,6 +14,16 @@ const isBrowerlessConfigured = () => {
   return !!config.get("browserless.url") && !!config.get("browserless.token");
 };
 
+const serializeUrl = (url: string, config?: { [key: string]: string }) => {
+  if (config) {
+    const parsedURL = new URL(url);
+    parsedURL.search = new URLSearchParams(config).toString();
+    return parsedURL.toString();
+  } else {
+    return url;
+  }
+};
+
 export const get = (
   url: string,
   extraConfig?: {
@@ -48,12 +58,13 @@ export const getJson = (
     scrape?: boolean;
     elements?: string;
     timeout?: number;
+    headers?: { [key: string]: string };
   },
 ) => {
   if (!isBrowerlessConfigured())
     throw new Error("Browserless is not configured");
   return BrowserlessHttpService.post("/function", {
-    code: puppeteerJsonExtractionCode(url, {
+    code: puppeteerJsonExtractionCode(serializeUrl(url, extraConfig?.params), {
       timeout: extraConfig?.timeout ?? 360000,
     }),
   });

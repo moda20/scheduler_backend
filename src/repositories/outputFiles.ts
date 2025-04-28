@@ -1,5 +1,4 @@
 import config from "@config/config";
-import { schedule_job_log } from "@generated/prisma";
 import { prisma } from "@initialization/index";
 import { newOutputFileConfig } from "@typesDef/models/outputFiles";
 import logger from "@utils/loggers";

@@ -3,7 +3,6 @@ export default {
   runningJobs: <Record<string, Record<string, JobDTO>>>{},
   initialized: <Record<string, boolean>>{},
   startJob(job: JobDTO) {
-    console.log("starting job", job.getName());
     if (this.runningJobs[job.getName()]) {
       this.runningJobs[job.getName()][
         job.getUniqueSingularId() ?? job.getId()!
@@ -19,6 +18,9 @@ export default {
       delete this.runningJobs[job.getName()][
         job.getUniqueSingularId() ?? job.getId()!
       ];
+      if (Object.keys(this.runningJobs[job.getName()]).length === 0) {
+        delete this.runningJobs[job.getName()];
+      }
     }
   },
   isRunning(job: JobDTO): boolean {

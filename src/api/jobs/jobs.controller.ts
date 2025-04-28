@@ -7,6 +7,7 @@ import {
   getJobMetrics,
   getJobStats,
   getLokiLogs,
+  getRunningJobs,
   isJobRunning,
   jobActionExecution,
 } from "@repositories/jobs";
@@ -107,4 +108,7 @@ export const JobsController = createElysia({ prefix: "/jobs" })
         query: t.String(),
       }),
     },
-  );
+  )
+  .get("/getRunningJobs", () => {
+    return getRunningJobs();
+  });

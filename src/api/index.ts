@@ -8,10 +8,12 @@ import logger from "@utils/loggers";
 import { PokemonController } from "./pokemon/pokemon.controller";
 
 export const apiRoutes = createElysia().onError(({ code, error, path }) => {
+  console.log(error);
   logger.error(
     `error when calling ${path} with code ${code} and error ${error}`,
   );
   logger.error(error.cause);
+  logger.error(error.stack);
   return new Response(error.toString(), {
     status: getErrorCode({ code, error }),
   });

@@ -110,7 +110,7 @@ export const exportCacheFiles = async ({
   tags,
   type = "json",
   ttl = 24 * 60 * 60,
-  newFile = true,
+  newFile = false,
 }: {
   data: any;
   fileName: string;

@@ -19,10 +19,12 @@ export const injectProxy = async ({
         host: proxy.proxy_ip,
         port: proxy.proxy_port,
         protocol: proxy.protocol,
-        auth: {
-          username: proxy.username ?? "",
-          password: proxy.password ?? "",
-        },
+        auth: proxy.username
+          ? {
+              username: proxy.username,
+              password: proxy.password,
+            }
+          : undefined,
       };
       return {
         ...proxy,

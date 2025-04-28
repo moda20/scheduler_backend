@@ -1,5 +1,4 @@
 import config from "@config/config";
-import { schedule_job_log } from "@generated/prisma";
 import { prisma } from "@initialization/index";
 import { newCacheFileConfig } from "@typesDef/models/outputFiles";
 import dayjs from "@utils/dayJs";

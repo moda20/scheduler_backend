@@ -36,7 +36,7 @@
     "pino-roll": "^3.0.0",
     "prisma": "^6.5.0",
     "qs": "^6.14.0",
-    "schedule-manager": "github:moda20/node-schedule-manager#Feature/typescript_rewrite"
+    "schedule-manager": "github:moda20/node-schedule-manager#Feature/typescript_rewrite_new_singular_event_logic"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",

@@ -27,7 +27,7 @@
         "pino-roll": "^3.0.0",
         "prisma": "^6.5.0",
         "qs": "^6.14.0",
-        "schedule-manager": "github:moda20/node-schedule-manager#Feature/typescript_rewrite",
+        "schedule-manager": "github:moda20/node-schedule-manager#Feature/typescript_rewrite_new_singular_event_logic",
       },
       "devDependencies": {
         "@types/bcrypt": "^5.0.0",
@@ -610,7 +610,7 @@
 
     "safer-buffer": ["safer-buffer@2.1.2", "", {}, "sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg=="],
 
-    "schedule-manager": ["schedule-manager@github:moda20/node-schedule-manager#b4d5195", { "dependencies": { "app-root-path": "^3.0.0", "ip": "^1.1.5", "moment": "^2.29.1", "mysql": "^2.18.1", "node-cron": "^3.0.0" } }, "moda20-node-schedule-manager-b4d5195"],
+    "schedule-manager": ["schedule-manager@github:moda20/node-schedule-manager#1ec2d39", { "dependencies": { "app-root-path": "^3.0.0", "ip": "^1.1.5", "moment": "^2.29.1", "mysql": "^2.18.1", "node-cron": "^3.0.0" } }, "moda20-node-schedule-manager-1ec2d39"],
 
     "secure-json-parse": ["secure-json-parse@2.7.0", "", {}, "sha512-6aU+Rwsezw7VR8/nyvKTx8QpWH9FrcYiXXlqC4z5d5XQBDRqtbfsRjnwGyqbi3gddNtWHuEk9OANUotL26qKUw=="],
 

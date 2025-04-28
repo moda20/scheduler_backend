@@ -42,7 +42,7 @@ export class JobConsumer extends Consumer {
     return injectProxy({
       jobId: Number(this.job?.id),
       axiosInstance: this.axios,
-      logger: this.logEvent,
+      logger: (v: any) => this.logEvent(v),
     })
       .then((proxy) => {
         if (proxy) {

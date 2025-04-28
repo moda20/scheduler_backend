@@ -66,19 +66,32 @@ export const registerJobStartAndEndActions = (job: JobDTO) => {
   if (currentRunsManager.initialized[job.getName()]) {
     return; // Already initialized;
   }
-  ScheduleJobLogEventBus.on(
+  ScheduleJobEventBus.on(
     "scheduleJob:" + job.getName(),
     (startedJob: JobDTO) => {
       currentRunsManager.startJob(startedJob);
     },
   );
-  ScheduleJobLogEventBus.on(
-    "completed:" + job.getName(),
-    (endedJob: JobDTO) => {
-      currentRunsManager.endJob(endedJob);
-    },
-  );
+  ScheduleJobEventBus.on("completed:" + job.getName(), (endedJob: JobDTO) => {
+    currentRunsManager.endJob(endedJob);
+  });
   currentRunsManager.initialized[job.getName()] = true;
+};
+
+export const registerSingularJobStartAndEndActions = (job: JobDTO) => {
+  const eventTargetId = `${job.getName()}_${job.getUniqueSingularId()}`;
+  logger.info(
+    `Registering single job ${job.getName()} with id ${eventTargetId}`,
+  );
+  if (currentRunsManager.initialized[eventTargetId]) {
+    return; // Already initialized;
+  }
+  currentRunsManager.startJob(job);
+  ScheduleJobEventBus.once(`completed:${eventTargetId}`, (endedJob: JobDTO) => {
+    currentRunsManager.endJob(endedJob);
+    delete currentRunsManager.initialized[eventTargetId];
+  });
+  currentRunsManager.initialized[eventTargetId] = true;
 };
 
 export const unsubscribeFromAllLogs = (id: number) => {

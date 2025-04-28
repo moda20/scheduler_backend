@@ -3,6 +3,7 @@ import { prisma } from "@initialization/index";
 import {
   deleteJobStartAndEndActions,
   registerJobStartAndEndActions,
+  registerSingularJobStartAndEndActions,
   saveJobLogs,
   unsubscribeFromAllLogs,
 } from "@initialization/jobsManager";
@@ -18,10 +19,10 @@ import currentRunsManager from "@utils/CurrentRunsManager";
 import { lokiHttpService } from "@utils/httpRequestConfig";
 import { findFiles, getNextJobExecution } from "@utils/jobUtils";
 import logger from "@utils/loggers";
-import { Glob } from "bun";
 import dayjs from "dayjs";
 import { join } from "path";
 import manager from "schedule-manager";
+import ScheduleJob from "schedule-manager/dist/Classes/Entities/ScheduleJob";
 const { ScheduleJobManager } = manager;
 
 export const getAllJobs = async ({
@@ -138,16 +139,19 @@ export const jobActionExecution = async (
 ) => {
   switch (action) {
     case jobActions.START: {
-      return ScheduleJobManager.startJobById(id).then(
-        (d: { success: boolean }) => {
-          if (d.success) {
-            return updateJobStatus(id, "STARTED");
-          }
-          throw new Error("Error when starting Job", {
-            cause: d,
-          });
-        },
-      );
+      return ScheduleJobManager.startJobById(id).then((d: any) => {
+        if (d.success) {
+          return ScheduleJobManager.getJobById(id)
+            .then((jobDetails: any) => {
+              registerJobStartAndEndActions(jobDetails.job);
+              return Promise.resolve(true);
+            })
+            .then(() => updateJobStatus(id, "STARTED"));
+        }
+        throw new Error("Error when starting Job", {
+          cause: d,
+        });
+      });
     }
     case jobActions.STOP: {
       // must stop logs event when stopping the cron job
@@ -208,9 +212,12 @@ export const jobActionExecution = async (
             cause: registrationData,
           });
         }
+
         return ScheduleJobManager.getJobById(id).then((jobData) => {
           if (!jobData.job)
             throw new Error("Job not found", { cause: jobData });
+          jobData.job.setUniqueSingularId(registrationData.uniqueSingularId!);
+          registerSingularJobStartAndEndActions(jobData.job);
           saveJobLogs(
             registrationData.uniqueSingularId!,
             jobData.job?.getName(),
@@ -285,4 +292,10 @@ export const getLokiLogs = (query: string, start?: number, end?: number) => {
       limit: 5000,
     },
   });
+};
+
+export const getRunningJobs = () => {
+  return {
+    count: currentRunsManager.getRunningJobCount(),
+  };
 };
