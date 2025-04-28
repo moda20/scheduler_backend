@@ -16,11 +16,13 @@ export class GotifyService implements Notifications {
       logger.error("Gotify Is not configured to use");
       return Promise.resolve();
     }
+    const envPrefix = config.get("env") === "production" ? "" : "(DEV) ";
     const { title, message, priority } = options ?? {};
     const urlEncodedResults = encodeURIComponent(results);
     return GotifyHttpService.post("/message", {
       message:
-        message ?? `Job ${jobName} finished with results: ${urlEncodedResults}`,
+        message ??
+        `${envPrefix}Job ${jobName} finished with results: ${urlEncodedResults}`,
       priority: priority ?? 1,
       title: title ?? `Job ${jobName}${jobId && ` ${jobId} `}finished`,
     }) as Promise<any>;
@@ -38,11 +40,13 @@ export class GotifyService implements Notifications {
       logger.error("Gotify Is not configured to use");
       return Promise.resolve();
     }
+    const envPrefix = config.get("env") === "production" ? "" : "(DEV) ";
     const { title, message, priority } = options ?? {};
     return GotifyHttpService.post(
       "/message",
       {
-        message: message ?? `Job ${jobName} crashed with error: ${error}`,
+        message:
+          message ?? `${envPrefix}Job ${jobName} crashed with error: ${error}`,
         priority: priority ?? 1,
         title: title ?? `Job ${jobName}${jobId && ` ${jobId} `} Crashed`,
       },
