@@ -107,6 +107,15 @@ export const getAllJobs = async ({
       );
     });
   }
+  if (parsedSort.latestRun) {
+    mappedJobs.sort((a, b) => {
+      return (
+        (parsedSort?.latestRun === "true" ? -1 : 1) *
+          a.latestRun?.start_time?.getTime() -
+        b.latestRun?.start_time?.getTime()
+      );
+    });
+  }
   return mappedJobs;
 };
 
