@@ -23,7 +23,8 @@ export class GotifyService implements Notifications {
         message ??
         `${envPrefix}Job ${jobName} finished with results: ${results}`,
       priority: priority ?? 1,
-      title: title ?? `Job ${jobName}${jobId && ` ${jobId} `}finished`,
+      title:
+        title ?? `${envPrefix}Job ${jobName}${jobId && ` ${jobId} `}finished`,
     }) as Promise<any>;
   }
 
@@ -47,7 +48,8 @@ export class GotifyService implements Notifications {
         message:
           message ?? `${envPrefix}Job ${jobName} crashed with error: ${error}`,
         priority: priority ?? 1,
-        title: title ?? `Job ${jobName}${jobId && ` ${jobId} `} Crashed`,
+        title:
+          title ?? `${envPrefix}Job ${jobName}${jobId && ` ${jobId} `} Crashed`,
       },
       {
         params: {
