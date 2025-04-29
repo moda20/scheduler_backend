@@ -1,0 +1,21 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma_base"
+  binaryTargets = ["linux-arm64-openssl-1.1.x", "darwin-arm64", "debian-openssl-1.1.x", "linux-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("BASE_DATABASE_URL")
+}
+
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user {
+  id              Int       @id @unique(map: "id") @default(autoincrement())
+  email           String    @db.VarChar(255) @unique
+  created_at      DateTime  @default(now()) @db.DateTime(0)
+  updated_at      DateTime  @default(now()) @db.DateTime(0)
+  username        String    @db.VarChar(255)
+  password        String   @db.VarChar(255)
+}

@@ -1,15 +1,12 @@
-import { UserServices, UserServicesType } from "@api/users/users.services";
+import { findUserById } from "@repositories/users";
 import { APIResponse } from "@typesDef/api";
-import { IUser } from "@typesDef/globals";
-
-const _userServices: UserServicesType = new UserServices();
+import { publicUserDTO } from "@typesDef/models/user";
+import logger from "@utils/loggers";
 
 export const isAuthenticated = async (
-  jwtAccess,
-  cookie,
-): Promise<APIResponse<IUser>> => {
-  console.log("/!\\ AUTHENTICATED GUARD /!\\");
-
+  jwtAccess: any,
+  cookie: any,
+): Promise<APIResponse<publicUserDTO>> => {
   if (!cookie.access_token) {
     console.log("@Error: No access token", cookie);
     return {
@@ -21,7 +18,7 @@ export const isAuthenticated = async (
 
   const jwt = await jwtAccess.verify(cookie!.access_token.value);
   if (!jwt) {
-    console.log("@Error: Invalid access token", jwt);
+    logger.error("@Error: Invalid access token", jwt);
     return {
       success: false,
       message: "Unauthorized",
@@ -31,17 +28,17 @@ export const isAuthenticated = async (
 
   const { userId } = jwt;
   if (!userId) {
-    console.log("@Error: Invalid access token", userId);
+    logger.error("@Error: Invalid access token", userId);
     return {
       success: false,
       message: "Unauthorized",
       errors: "Invalid access token",
     };
   }
-  const user = await _userServices.findById(userId);
+  const user = await findUserById(Number(userId));
 
   if (!user) {
-    console.log("@Error: User not found", user);
+    logger.error("@Error: User not found", user);
     return {
       success: false,
       message: "Unauthorized",
@@ -51,6 +48,9 @@ export const isAuthenticated = async (
 
   return {
     success: true,
-    data: user,
+    data: {
+      username: user.username,
+      email: user.email,
+    },
   };
 };

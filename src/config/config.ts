@@ -121,6 +121,44 @@ const config = convict({
       env: "SCHEDULER_DB_NAME",
     },
   },
+  BASE_DB: {
+    host: {
+      doc: "The base database host.",
+      format: "ipaddress",
+      default: "127.0.0.1",
+      env: "BASE_DB_HOST",
+    },
+    port: {
+      doc: "The base database port.",
+      format: "port",
+      default: 3306,
+      env: "BASE_DB_PORT",
+    },
+    username: {
+      doc: "The base database username.",
+      format: String,
+      default: "root",
+      env: "BASE_DB_USERNAME",
+    },
+    password: {
+      doc: "The base database password.",
+      format: String,
+      default: "root",
+      env: "BASE_DB_PASSWORD",
+    },
+    databaseName: {
+      doc: "The base database name.",
+      format: String,
+      default: "scheduler",
+      env: "BASE_DB_NAME",
+    },
+    passwordSaltRounds: {
+      doc: "The salt rounds used to hash passwords",
+      format: Number,
+      default: 12,
+      env: "BASE_DB_PASSWORD_SALT_ROUNDS",
+    },
+  },
   gotify: {
     url: {
       doc: "The gotify url.",

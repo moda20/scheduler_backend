@@ -1,19 +1,13 @@
+import { isAuthenticated } from "@auth/guards/authenticated.guard";
+import { registerUser, validateUser } from "@repositories/users";
 import { APIResponse } from "@typesDef/api";
-import { IUser, SignInUserDto, SignUpUserDto } from "@typesDef/user";
+import { NewUserConfig, publicUserDTO, UserDTO } from "@typesDef/models/user";
+import { SignInUserDto } from "@typesDef/user";
 import { createElysia } from "@utils/createElysia";
 
-import {
-  CookieOptions,
-  jwtAccessSetup,
-  jwtRefreshSetup,
-} from "./guards/setup.jwt";
-import { AuthServices, AuthServicesType } from "./auth.services";
-
-const _authService: AuthServicesType = new AuthServices();
+import { CookieOptions } from "./guards/setup.jwt";
 
 export const auth = createElysia({ prefix: "/auth" })
-  .use(jwtAccessSetup)
-  .use(jwtRefreshSetup)
   .get("/", () => "This is the auth module!")
   .post(
     "/login",
@@ -22,28 +16,29 @@ export const auth = createElysia({ prefix: "/auth" })
       jwtAccess,
       jwtRefresh,
       cookie,
-    }): Promise<APIResponse<IUser>> => {
-      const user: IUser = await _authService.validateUser(
-        data as SignInUserDto,
-      );
+    }): Promise<APIResponse<publicUserDTO>> => {
+      const user: UserDTO = await validateUser(data as SignInUserDto);
 
       cookie.access_token.set({
         value: await jwtAccess.sign({
-          userId: user._id,
+          userId: user.id?.toString(),
         }),
         ...CookieOptions.accessToken,
       });
 
       cookie.refresh_token.set({
         value: await jwtRefresh.sign({
-          userId: user._id,
+          userId: user.id?.toString(),
         }),
         ...CookieOptions.refreshToken,
       });
 
       return {
         success: true,
-        data: user,
+        data: {
+          email: user.email,
+          username: user.username,
+        },
       };
     },
   )
@@ -54,38 +49,49 @@ export const auth = createElysia({ prefix: "/auth" })
       jwtAccess,
       jwtRefresh,
       cookie,
-    }): Promise<APIResponse<IUser>> => {
+    }): Promise<APIResponse<publicUserDTO>> => {
       if (!body) throw new Error("Data is required");
 
-      const user: IUser = await _authService.register(body as SignUpUserDto);
+      const user: UserDTO = await registerUser(body as NewUserConfig);
 
       cookie.access_token.set({
         value: await jwtAccess.sign({
-          userId: user._id,
+          userId: user.id?.toString(),
         }),
         ...CookieOptions.accessToken,
       });
 
       cookie.refresh_token.set({
         value: await jwtRefresh.sign({
-          userId: user._id,
+          userId: user.id?.toString(),
         }),
         ...CookieOptions.refreshToken,
       });
 
       return {
         success: true,
-        data: user,
+        data: {
+          username: user.username,
+          email: user.email,
+        },
       };
     },
   )
   .post("/logout", ({ cookie }): APIResponse => {
     delete cookie.access_token;
     delete cookie.refresh_token;
-
-    console.log("COOKIE: ", cookie);
     return {
       success: true,
       data: null,
     };
+  })
+  .get("/me", async ({ cookie, jwtAccess, set }) => {
+    const isAuth = await isAuthenticated(jwtAccess, cookie);
+    if (!isAuth.success) {
+      set.status = 401;
+      throw new Error("Unauthorized", {
+        cause: isAuth.message,
+      });
+    }
+    return isAuth.data;
   });

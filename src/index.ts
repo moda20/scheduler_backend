@@ -21,9 +21,9 @@ api.use(jwtAccessSetup).use(jwtRefreshSetup).use(cookie());
 api.use(
   cors({
     origin: () => true,
-    credentials: false,
-    exposedHeaders: process.env.CORS_EXPOSED_HEADERS || "*",
-    allowedHeaders: process.env.CORS_ALLOWED_HEADER || "*",
+    credentials: true,
+    exposedHeaders: "*",
+    allowedHeaders: ["content-type"],
     // @ts-ignore
     methods: (process.env.CORS_ALLOWED_METHODS! as HTTPMethod) || "*",
   }),
