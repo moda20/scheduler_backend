@@ -51,6 +51,7 @@ export const isAuthenticated = async (
     data: {
       username: user.username,
       email: user.email,
+      id: userId,
     },
   };
 };

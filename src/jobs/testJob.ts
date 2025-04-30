@@ -9,7 +9,7 @@ class TestJob extends JobConsumer {
   async run(job: JobDTO, jobLog: JobLogDTO, options: JobOptions) {
     this.logEvent("You are running the test job");
     this.logEvent("will sleep");
-    await this.options?.utils?.sleep(10);
+    await this.options?.utils?.sleep(15);
     this.logEvent("finished sleeping");
     await this.exportResultsToFile({
       job_log_id: jobLog.id,

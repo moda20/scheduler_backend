@@ -4,6 +4,7 @@ import cookie from "@elysiajs/cookie";
 import { cors } from "@elysiajs/cors";
 
 import { apiRoutes } from "@api/index";
+import mainSocketService from "@api/websocket/mainSocket.service";
 import { auth } from "@auth/auth.controller";
 import { jwtAccessSetup, jwtRefreshSetup } from "@auth/guards/setup.jwt";
 import config from "@config/config";
@@ -44,6 +45,7 @@ initialize()
     logger.info(
       `🦊 Server is running at ${api.server?.hostname}:${process.env.PORT || 8080}`,
     );
+    //mainSocketService.setWsClient(api?.server);
   })
   .catch((err) => {
     logger.error("Error initializing the server");

@@ -15,6 +15,7 @@ export interface SignInUserDto {
 export interface publicUserDTO {
   username: string;
   email: string;
+  id?: string;
 }
 
 export interface NewUserConfig extends SignInUserDto {

@@ -1,3 +1,4 @@
+import mainSocketService from "@api/websocket/mainSocket.service";
 import { JobDTO } from "@typesDef/models/job";
 export default {
   runningJobs: <Record<string, Record<string, JobDTO>>>{},
@@ -12,6 +13,10 @@ export default {
         [job.getUniqueSingularId() ?? job.getId()!]: job,
       };
     }
+    mainSocketService.sendJobStartingNotification(
+      job,
+      this.getRunningJobCount(),
+    );
   },
   endJob(job: JobDTO) {
     if (this.runningJobs[job.getName()]) {
@@ -22,6 +27,7 @@ export default {
         delete this.runningJobs[job.getName()];
       }
     }
+    mainSocketService.sendJobEndingNotification(job, this.getRunningJobCount());
   },
   isRunning(job: JobDTO): boolean {
     return !!this.runningJobs[job.getName()];

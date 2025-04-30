@@ -2,6 +2,7 @@ import { outputFilesController } from "@api/files/outputFiles.controller";
 import { JobsController } from "@api/jobs/jobs.controller";
 import { proxiesController } from "@api/proxies/proxies.controller";
 import { systemController } from "@api/system/system.controller";
+import { websocketController } from "@api/websocket/mainSocket.controller";
 import { isAuthenticated } from "@auth/guards/authenticated.guard";
 import { createElysia } from "@utils/createElysia";
 import logger from "@utils/loggers";
@@ -21,7 +22,6 @@ export const apiRoutes = createElysia()
   .guard({
     async beforeHandle({ set, jwtAccess, cookie }) {
       const isAuth = await isAuthenticated(jwtAccess, cookie);
-
       if (!isAuth.success) {
         set.status = 401;
         return {
@@ -50,3 +50,4 @@ apiRoutes.use(JobsController);
 apiRoutes.use(systemController);
 apiRoutes.use(outputFilesController);
 apiRoutes.use(proxiesController);
+apiRoutes.use(websocketController);
