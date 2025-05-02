@@ -23,7 +23,7 @@ api.use(
   cors({
     origin: () => true,
     credentials: true,
-    exposedHeaders: "*",
+    exposeHeaders: ["Content-Disposition", "*"],
     allowedHeaders: ["content-type"],
     // @ts-ignore
     methods: (process.env.CORS_ALLOWED_METHODS! as HTTPMethod) || "*",

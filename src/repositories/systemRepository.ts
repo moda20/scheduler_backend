@@ -1,8 +1,10 @@
 import config from "@config/config";
 import { prisma } from "@initialization/index";
+import logger from "@utils/loggers";
 import bun from "bun";
 import mysqldump from "mysqldump";
-import { join } from "path";
+import { mkdir } from "node:fs/promises";
+import { join, parse } from "path";
 
 export const getSchedulerDatabaseSize = async (): Promise<
   [{ size_mb: number }]
@@ -27,14 +29,18 @@ export const getSchedulerDatabaseInfo = async () => {
 
 export const backupSchedulerDB = async () => {
   const pathToFile = join(
-    bun.main,
-    "src",
-    "api",
+    parse(bun.main).dir,
     "outputs",
     "files",
     config.get("files.databaseBackupRootPath"),
-    `${config.get("DB.schedulerDatabaseName")}_backup_${new Date().toISOString()}.sql`,
   );
+  const fileName = `${config.get("DB.schedulerDatabaseName")}_backup_${new Date().toISOString()}.sql`;
+  await mkdir(pathToFile, {
+    recursive: true,
+  }).catch((err) => {
+    logger.error(`couldn't create directory for backup : ${err}`);
+  });
+  const fullPath = join(pathToFile, fileName);
   const result = await mysqldump({
     connection: {
       host: config.get("DB.host"),
@@ -42,10 +48,10 @@ export const backupSchedulerDB = async () => {
       password: config.get("DB.password"),
       database: config.get("DB.schedulerDatabaseName"),
     },
-    dumpToFile: pathToFile,
+    dumpToFile: fullPath,
   });
   return {
     result,
-    pathToFile,
+    pathToFile: fullPath,
   };
 };
