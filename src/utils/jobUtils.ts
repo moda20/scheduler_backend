@@ -6,7 +6,7 @@ import { saveNewFile } from "@repositories/outputFiles";
 import logger from "@utils/loggers";
 import cronParser from "cron-parser";
 import { readdirSync, statSync } from "fs-extra";
-import path from "path";
+import path, { parse } from "path";
 export const Nullable = <T extends TSchema>(T: T) => {
   // type Nullable<T> = T | null
   return t.Union([T, t.Null()]);
@@ -125,12 +125,13 @@ export const exportCacheFiles = async ({
     return;
   }
   const existingFile = {
-    result: data,
+    content: data,
     time: new Date().toDateString(),
   };
   const finalTags = Array.isArray(tags) ? tags.join(",") : tags?.toString();
+  const fileNameHasExtension = !!parse(fileName).ext;
   return saveCacheFile({
-    fileName: `${fileName}.json`,
+    fileName: `${fileName}${fileNameHasExtension ? "" : ".json"}`,
     data: JSON.stringify(existingFile, null, 4),
     tags: finalTags,
     type: type,

@@ -92,14 +92,19 @@ export const JobsController = createElysia({ prefix: "/jobs" })
   )
   .get(
     "/jobLogs/loki",
-    ({ query }) => {
+    async ({ query }) => {
       const { start, end, query: queryString } = query;
       if (!config.get("grafana.lokiUrl")) {
         throw new Error("Loki connection is not configured", {
           cause: 400,
         });
       }
-      return getLokiLogs(queryString, Number(start), Number(end));
+      const { data } = await getLokiLogs(
+        queryString,
+        Number(start),
+        Number(end),
+      );
+      return data;
     },
     {
       query: t.Object({
