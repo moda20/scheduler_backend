@@ -33,7 +33,7 @@ COPY --from=install /temp/prod/node_modules node_modules
 COPY --from=prerelease /usr/src/app/. .
 COPY --from=prerelease /usr/src/app/package.json .
 RUN apt update
-RUN apt-get install strace
+RUN apt-get install strace -y
 RUN bun install -g typescript
 RUN bun install bun-types
 RUN tsc --project tsTypesconfig.json || true
