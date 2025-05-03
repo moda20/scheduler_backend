@@ -6,14 +6,14 @@ import { ICookiesOptions } from "@typesDef/api";
 export const CookieOptions: ICookiesOptions = {
   accessToken: {
     httpOnly: true,
-    secure: false, // temporary measure to avoid testing issues on local TODO make this configurable
+    secure: true, // temporary measure to avoid testing issues on local TODO make this configurable
     sameSite: "none",
     path: "/",
     maxAge: 30 * 24 * 60 * 60, // parseInt(process.env.JWT_TOKEN_EXPIRATION_TIME || "7d"),
   },
   refreshToken: {
     httpOnly: true,
-    secure: false, // temporary measure to avoid testing issues on local TODO make this configurable
+    secure: true, // temporary measure to avoid testing issues on local TODO make this configurable
     sameSite: "none",
     path: "/auth/refresh-token",
     maxAge: 30 * 24 * 60 * 60, //parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME || "30d"),
