@@ -45,7 +45,6 @@ initialize()
     logger.info(
       `🦊 Server is running at ${api.server?.hostname}:${process.env.PORT || 8080}`,
     );
-    //mainSocketService.setWsClient(api?.server);
   })
   .catch((err) => {
     logger.error("Error initializing the server");

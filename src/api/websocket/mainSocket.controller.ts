@@ -23,6 +23,9 @@ export const websocketController = createElysia().ws("/ws", {
       return;
     }
     socketService.setWsClient(ws, ws.data.headers["x-user-id"]);
+    ws.send({
+      id: JobNotificationTopics.NOOP,
+    });
   },
   async beforeHandle({ set, jwtAccess, cookie }) {
     const isAuth = await isAuthenticated(jwtAccess, cookie);
