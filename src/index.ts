@@ -26,7 +26,7 @@ api.use(
     exposeHeaders: ["Content-Disposition", "*"],
     allowedHeaders: ["content-type"],
     // @ts-ignore
-    methods: (process.env.CORS_ALLOWED_METHODS! as HTTPMethod) || "*",
+    methods: ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"],
   }),
 );
 api.use(helmet());
