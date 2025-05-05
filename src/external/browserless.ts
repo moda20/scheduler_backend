@@ -2,13 +2,38 @@ import config from "@config/config";
 import { BrowserlessHttpService } from "@utils/httpRequestConfig";
 const puppeteerJsonExtractionCode = (
   url: string,
-  config: { timeout: number },
-) => ` export default async function ({ page }) { 
+  config: { timeout: number; headers?: { [key: string]: string } },
+) => {
+  let headers = "";
+  if (config.headers) {
+    headers = `
+       await page.setRequestInterception(true);
+       page.on('request', request => {
+          if (!request.isNavigationRequest()) {
+            request.continue();
+            return;
+          }
+          const headers = request.headers();
+          ${Object.keys(config.headers)
+            .map((key) => {
+              return `headers['${key}'] = "${config.headers![key]}";`;
+            })
+            .join("\n")}
+          headers['accept'] = "application/json";
+          headers["content-type"] = "application/json"
+          request.continue({ headers });
+       });
+    `;
+  }
+  const query = ` export default async function ({ page }) { 
+  ${headers}
   let pageRes = await page.goto('${url}', {timeout: ${config.timeout}});
   let headers = pageRes.headers();
   let content = await pageRes.json();
   return {data:{headers, content}, type: "application/json",}
 } `;
+  return query;
+};
 
 const isBrowerlessConfigured = () => {
   return !!config.get("browserless.url") && !!config.get("browserless.token");
@@ -66,6 +91,7 @@ export const getJson = (
   return BrowserlessHttpService.post("/function", {
     code: puppeteerJsonExtractionCode(serializeUrl(url, extraConfig?.params), {
       timeout: extraConfig?.timeout ?? 360000,
+      headers: extraConfig?.headers,
     }),
   });
 };
