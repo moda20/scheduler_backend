@@ -8,7 +8,7 @@ export class GotifyService implements Notifications {
     jobId: string,
     jobName: string,
     results: string,
-    options?: { title: string; message: string; priority: number },
+    options?: { title?: string; message?: string; priority?: number },
   ) {
     const url = config.get("gotify.url");
     const token = config.get("gotify.token");
@@ -32,7 +32,7 @@ export class GotifyService implements Notifications {
     jobId: string,
     jobName: string,
     error?: string,
-    options?: { title: string; message: string; priority: number },
+    options?: { title?: string; message?: string; priority?: number },
   ): Promise<any> {
     const url = config.get("gotify.url");
     const token = config.get("gotify.token");
