@@ -13,6 +13,6 @@ services:
       - DB_PORT=3306
       - DB_USERNAME=root
       - DB_PASSWORD=
-      - SCHEDULER_DB_NAME=scraper_scheduler
+      - SCHEDULER_DB_NAME=scheduler_db
     ports:
       - "8080:8080"

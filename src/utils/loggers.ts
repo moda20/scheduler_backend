@@ -21,7 +21,7 @@ const JobLogger = (id: string, name: string) => {
   if (loggers[id]) return loggers[id];
   const lokiTransport = Object.assign({}, JobLokiTransportTemplate);
   lokiTransport.options.labels = {
-    app: "scrap_server",
+    app: config.get("appName"),
     job: name,
     uniqueId: id,
   };

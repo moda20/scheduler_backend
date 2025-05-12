@@ -10,6 +10,16 @@ const config = convict({
     default: "development",
     env: "NODE_ENV",
   },
+  appName: {
+    doc: "The application name.",
+    default: "scheduler_backend",
+    env: "APP_NAME",
+  },
+  swaggerServer: {
+    doc: "Whether to enable swagger server or not.",
+    default: true,
+    env: "ENABLE_SWAGGER_SERVER",
+  },
   server: {
     ip: {
       doc: "The server ip.",

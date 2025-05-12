@@ -1,10 +1,10 @@
-import { Elysia, HTTPMethod } from "elysia";
+import { Elysia } from "elysia";
 import { helmet } from "elysia-helmet";
 import cookie from "@elysiajs/cookie";
 import { cors } from "@elysiajs/cors";
+import { swagger } from "@elysiajs/swagger";
 
 import { apiRoutes } from "@api/index";
-import mainSocketService from "@api/websocket/mainSocket.service";
 import { auth } from "@auth/auth.controller";
 import { jwtAccessSetup, jwtRefreshSetup } from "@auth/guards/setup.jwt";
 import config from "@config/config";
@@ -30,6 +30,22 @@ api.use(
   }),
 );
 api.use(helmet());
+
+// swagger
+if (config.get("swaggerServer")) {
+  api.use(
+    swagger({
+      path: "/api-docs",
+      documentation: {
+        info: {
+          title: "Scheduler Backend API",
+          description: "Scheduler Backend API Documentation",
+          version: "0.0.0-pre-alpha",
+        },
+      },
+    }),
+  );
+}
 
 // Routes
 api.use(auth);
