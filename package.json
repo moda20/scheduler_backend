@@ -1,11 +1,12 @@
 {
-  "name": "bun-elysia-boilerplate-by-imjustlucas",
-  "description": "A boilerplate for ElysiaJS with Bun made by imjustlucas",
+  "name": "scheduler-backend-by-moda20",
+  "description": "The backend for the scheduler",
   "main": "src/index.ts",
   "author": {
-    "name": "Lucas"
+    "name": "moda20",
+    "email": "kadhem03@gmail.com"
   },
-  "version": "1.0.50",
+  "version": "0.0.0-pre-alpha",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",
