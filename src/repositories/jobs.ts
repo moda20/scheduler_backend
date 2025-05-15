@@ -22,7 +22,6 @@ import logger from "@utils/loggers";
 import dayjs from "dayjs";
 import { join } from "path";
 import manager from "schedule-manager";
-import ScheduleJob from "schedule-manager/dist/Classes/Entities/ScheduleJob";
 const { ScheduleJobManager } = manager;
 
 export const getAllJobs = async ({

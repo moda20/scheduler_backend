@@ -1,7 +1,7 @@
-import { t } from "elysia";
-
 import {
+  backupBaseDB,
   backupSchedulerDB,
+  getBaseDatabaseInfo,
   getSchedulerDatabaseInfo,
 } from "@repositories/systemRepository";
 import { createElysia } from "@utils/createElysia";
@@ -18,5 +18,12 @@ export const systemController = createElysia({ prefix: "/system" })
   })
   .get("/backupAndDownloadSchedulerDB", async () => {
     const { pathToFile } = await backupSchedulerDB();
+    return file(pathToFile);
+  })
+  .get("/getBaseDbConnection", () => {
+    return getBaseDatabaseInfo();
+  })
+  .get("/backupAndDownloadBaseDB", async () => {
+    const { pathToFile } = await backupBaseDB();
     return file(pathToFile);
   });

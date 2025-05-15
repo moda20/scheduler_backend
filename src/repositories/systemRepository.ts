@@ -1,25 +1,32 @@
 import config from "@config/config";
-import { prisma } from "@initialization/index";
+import { basePrisma, prisma } from "@initialization/index";
+import { PrismaClient } from "@prisma/client";
 import logger from "@utils/loggers";
 import bun from "bun";
 import mysqldump from "mysqldump";
 import { mkdir } from "node:fs/promises";
 import { join, parse } from "path";
 
-export const getSchedulerDatabaseSize = async (): Promise<
-  [{ size_mb: number }]
-> => {
-  const query = `SELECT table_schema AS database_name, 
+const getDbSizeQuery = (dbName: string) => {
+  return `SELECT table_schema AS database_name, 
            ROUND(SUM(data_length + index_length) / 1024 / 1024, 2) AS size_mb
     FROM information_schema.tables
-    WHERE table_schema = '${config.get("DB.schedulerDatabaseName")}'
+    WHERE table_schema = '${dbName}'
     GROUP BY table_schema;`;
-
-  return prisma.$queryRawUnsafe(query);
+};
+export const getSchedulerDatabaseSize = async (
+  dbName: string,
+  prismaClient: Partial<PrismaClient>,
+): Promise<[{ size_mb: number }]> => {
+  const query = getDbSizeQuery(dbName);
+  return prismaClient.$queryRawUnsafe(query);
 };
 
 export const getSchedulerDatabaseInfo = async () => {
-  const dbSize: [{ size_mb: number }] = await getSchedulerDatabaseSize();
+  const dbSize: [{ size_mb: number }] = await getSchedulerDatabaseSize(
+    config.get("DB.schedulerDatabaseName"),
+    prisma,
+  );
   return {
     host: `${config.get("DB.host")}:${config.get("DB.port")}`,
     databaseName: config.get("DB.schedulerDatabaseName"),
@@ -27,14 +34,38 @@ export const getSchedulerDatabaseInfo = async () => {
   };
 };
 
-export const backupSchedulerDB = async () => {
+export const getBaseDatabaseInfo = async () => {
+  const dbSize: [{ size_mb: number }] = await getSchedulerDatabaseSize(
+    config.get("BASE_DB.databaseName"),
+    basePrisma,
+  );
+  return {
+    host: `${config.get("DB.host")}:${config.get("DB.port")}`,
+    databaseName: config.get("DB.schedulerDatabaseName"),
+    dbSize: dbSize[0]?.size_mb,
+  };
+};
+
+const mysqldumpDbDump = async ({
+  host,
+  user = "",
+  password = "",
+  database,
+  port,
+}: {
+  host: string;
+  user: string;
+  password: string;
+  database: string;
+  port: number;
+}) => {
   const pathToFile = join(
     parse(bun.main).dir,
     "outputs",
     "files",
     config.get("files.databaseBackupRootPath"),
   );
-  const fileName = `${config.get("DB.schedulerDatabaseName")}_backup_${new Date().toISOString()}.sql`;
+  const fileName = `${database}_backup_${new Date().toISOString()}.sql`;
   await mkdir(pathToFile, {
     recursive: true,
   }).catch((err) => {
@@ -43,10 +74,11 @@ export const backupSchedulerDB = async () => {
   const fullPath = join(pathToFile, fileName);
   const result = await mysqldump({
     connection: {
-      host: config.get("DB.host"),
-      user: config.get("DB.username"),
-      password: config.get("DB.password"),
-      database: config.get("DB.schedulerDatabaseName"),
+      host: host,
+      user: user,
+      password: password,
+      database: database,
+      port: port,
     },
     dumpToFile: fullPath,
   });
@@ -54,4 +86,24 @@ export const backupSchedulerDB = async () => {
     result,
     pathToFile: fullPath,
   };
+};
+
+export const backupSchedulerDB = async () => {
+  return mysqldumpDbDump({
+    host: config.get("DB.host"),
+    user: config.get("DB.username"),
+    password: config.get("DB.password"),
+    database: config.get("DB.schedulerDatabaseName"),
+    port: config.get("DB.port"),
+  });
+};
+
+export const backupBaseDB = async () => {
+  return mysqldumpDbDump({
+    host: config.get("BASE_DB.host"),
+    user: config.get("BASE_DB.username"),
+    password: config.get("BASE_DB.password"),
+    database: config.get("BASE_DB.databaseName"),
+    port: config.get("BASE_DB.port"),
+  });
 };
