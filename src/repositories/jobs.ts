@@ -92,7 +92,7 @@ export const getAllJobs = async ({
 
       if (nextA && nextB) {
         return (
-          (parsedSort?.cromSetting === "asc" ? -1 : 1) * nextA.getTime() -
+          (parsedSort?.cromSetting === "false" ? -1 : 1) * nextA.getTime() -
           nextB.getTime()
         );
       }
@@ -102,7 +102,7 @@ export const getAllJobs = async ({
   if (parsedSort?.running) {
     mappedJobs.sort((a, b) => {
       return (
-        (parsedSort?.running === "asc" ? -1 : 1) *
+        (parsedSort?.running === "false" ? -1 : 1) *
         (Number(a.isCurrentlyRunning) - Number(b.isCurrentlyRunning))
       );
     });
@@ -110,7 +110,7 @@ export const getAllJobs = async ({
   if (parsedSort.latestRun) {
     mappedJobs.sort((a, b) => {
       return (
-        (parsedSort?.latestRun === "true" ? -1 : 1) *
+        (parsedSort?.latestRun === "false" ? -1 : 1) *
           a.latestRun?.start_time?.getTime() -
         b.latestRun?.start_time?.getTime()
       );
