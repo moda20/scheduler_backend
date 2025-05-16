@@ -98,10 +98,10 @@ export const getAllJobs = async ({
       return 0;
     });
   }
-  if (parsedSort?.running) {
+  if (parsedSort?.isCurrentlyRunning) {
     mappedJobs.sort((a, b) => {
       return (
-        (parsedSort?.running === "false" ? -1 : 1) *
+        (parsedSort?.isCurrentlyRunning === "false" ? -1 : 1) *
         (Number(a.isCurrentlyRunning) - Number(b.isCurrentlyRunning))
       );
     });
@@ -113,6 +113,12 @@ export const getAllJobs = async ({
           a.latestRun?.start_time?.getTime() -
         b.latestRun?.start_time?.getTime()
       );
+    });
+  }
+  if (parsedSort.scheduled) {
+    mappedJobs.sort((a) => {
+      const sortOrder = parsedSort?.scheduled === "false" ? -1 : 1;
+      return a.status === "STARTED" ? sortOrder : -sortOrder;
     });
   }
   return mappedJobs;
