@@ -40,8 +40,8 @@ export const getBaseDatabaseInfo = async () => {
     basePrisma,
   );
   return {
-    host: `${config.get("DB.host")}:${config.get("DB.port")}`,
-    databaseName: config.get("DB.schedulerDatabaseName"),
+    host: `${config.get("BASE_DB.host")}:${config.get("BASE_DB.port")}`,
+    databaseName: config.get("BASE_DB.databaseName"),
     dbSize: dbSize[0]?.size_mb,
   };
 };
