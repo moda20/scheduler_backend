@@ -1,5 +1,6 @@
 import { t } from "elysia";
 
+import handleSocketMessage from "@api/websocket/mainSocket.communication";
 import socketService from "@api/websocket/mainSocket.service";
 import { isAuthenticated } from "@auth/guards/authenticated.guard";
 import { JobNotificationTopics } from "@typesDef/api/websocket";
@@ -7,11 +8,11 @@ import { createElysia } from "@utils/createElysia";
 
 export const websocketController = createElysia().ws("/ws", {
   body: t.Object({
-    message: t.String(),
+    message: t.Optional(t.String()),
+    id: t.String(),
   }),
-  message(ws, { message }) {
-    console.log("message received", message);
-    ws.send(JobNotificationTopics.NOOP);
+  message(ws, socketMessage) {
+    handleSocketMessage(socketMessage, ws);
   },
   error(error: any) {
     console.log(error);

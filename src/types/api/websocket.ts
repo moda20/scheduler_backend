@@ -14,5 +14,6 @@ export enum JobNotificationTopics {
   JobStarted = "JobStarted",
   JobFinished = "JobFinished",
   JobFailed = "JobFailed",
+  Status = "Status",
   NOOP = "NOOP",
 }
