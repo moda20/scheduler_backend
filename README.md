@@ -74,6 +74,30 @@ the initial configuration is done via the **.env** file. The following variables
 | CACHE_FILES_ROOT_PATH        | The directory inside the output folder that houses cache files                       | caches            |
 | OUTPUT_FILES_ROOT_PATH       | The directory inside the output folder that houses exported files                    | exported          |
 
+
+
+## Development
+
+The Scheduler_backend is built using [Bun](https://bun.sh/) for the runtime and [Elysia](https://elysiajs.com/) for the server/API framework.
+The following are the most pertinent packages used in tandem with the above : 
+
+- [Prisma](https://www.prisma.io/) for the ORM and migrations
+- [Pino](https://github.com/pinojs/pino) for logging
+- [Scheduler Manager](https://github.com/moda20/node-schedule-manager) for the CRON based scheduling
+
+### Running backend locally
+To run the backend app locally :
+- Have bun installed : installation instructions [Bun.sh](https://bun.sh/docs/installation)
+- Clone the repo : `git clone https://github.com/moda20/scheduler_backend.git`
+- Install the dependencies : `bun install`
+- Run the app : `bun dev`
+- to build the app run : `bun build`
+
+A .env file is necessary for the app to run, the .env.example file is provided as a template and check the table above
+
+
+
+
 ## 📝 License
 
 TBD
@@ -82,6 +106,5 @@ TBD
 
 Contributions are welcome! Please feel free to open an issue or submit a pull request.
 Please take the time to debug your issues and test your pull request changes if they need to, adding runnable tests
-would
-be much appreciated. 
+would be much appreciated. 
 
