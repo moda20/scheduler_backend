@@ -44,7 +44,7 @@ the initial configuration is done via the **.env** file. The following variables
 | ENABLE_SWAGGER_SERVER        | Whether to enable the swagger server or not                                          | true              |
 | APP_NAME                     | The Application name (will be used around the app)                                   | scheduler_backend |
 | DB_HOST                      | The database host                                                                    | localhost         |
-| DB_PORT                      | The database port                                                                    | 27017             |
+| DB_PORT                      | The database port                                                                    | 3306              |
 | DB_USERNAME                  | The database username                                                                | root              |
 | DB_PASSWORD                  | The database password                                                                | root              |
 | SCHEDULER_DB_NAME            | The database name for the scheduler                                                  | scheduler_db      |
