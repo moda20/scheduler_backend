@@ -33,7 +33,6 @@ COPY --from=install /temp/prod/node_modules node_modules
 COPY --from=prerelease /usr/src/app/. .
 COPY --from=prerelease /usr/src/app/package.json .
 RUN apt update
-RUN apt-get install strace -y
 RUN bun install -g typescript
 RUN bun install bun-types
 RUN tsc --project tsTypesconfig.json || true
@@ -41,4 +40,4 @@ RUN tsc --project tsTypesconfig.json || true
 # run the app
 # USER bun # TODO Investigate usign the same user for docker, in order to not face permissions issues
 EXPOSE 8080/tcp
-ENTRYPOINT ["strace", "-e", "trace=openat", "-f", "-o", "/usr/src/app/trace.log", "bun", "run", "src/index.ts", "--verbose-error-trace" ]
+ENTRYPOINT ["bun", "run", "src/index.ts", "--verbose-error-trace" ]
