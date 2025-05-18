@@ -1,4 +1,4 @@
-declare module "src/types/pokemon" {
+declare module "@types/pokemon" {
     export interface IPokemon {
         name: string;
         type: string;
@@ -13,8 +13,8 @@ declare module "src/types/pokemon" {
         level: number;
     }
 }
-declare module "src/types/user" {
-    import { Currency, Language } from "src/types/globals";
+declare module "@types/user" {
+    import { Currency, Language } from "@types/globals";
     export interface IUser {
         _id: string;
         username: string;
@@ -71,9 +71,9 @@ declare module "src/types/user" {
         SUSPENDED = "suspended"
     }
 }
-declare module "src/types/globals" {
-    export * from "src/types/pokemon";
-    export * from "src/types/user";
+declare module "@types/globals" {
+    export * from "@types/pokemon";
+    export * from "@types/user";
     export enum Currency {
         EUR = 0,
         USD = 1
@@ -87,10 +87,12 @@ declare module "src/types/globals" {
         EN = 1
     }
 }
-declare module "src/config/config" {
+declare module "@config/config" {
     import convict from "convict";
     const config: convict.Config<{
         env: string;
+        appName: string;
+        swaggerServer: boolean;
         server: {
             ip: string;
             port: number;
@@ -116,6 +118,14 @@ declare module "src/config/config" {
             password: string;
             schedulerDatabaseName: string;
         };
+        BASE_DB: {
+            host: string;
+            port: number;
+            username: string;
+            password: string;
+            databaseName: string;
+            passwordSaltRounds: number;
+        };
         gotify: {
             url: null;
             token: string;
@@ -135,14 +145,14 @@ declare module "src/config/config" {
     }>;
     export default config;
 }
-declare module "src/utils/httpRequestConfig" {
+declare module "@utils/httpRequestConfig" {
     import axios from "axios";
     export default axios;
     export const lokiHttpService: import("axios").AxiosInstance;
     export const GotifyHttpService: import("axios").AxiosInstance;
     export const BrowserlessHttpService: import("axios").AxiosInstance;
 }
-declare module "src/external/browserless" {
+declare module "@external/browserless" {
     export const get: (url: string, extraConfig?: {
         params?: {
             [key: string]: string;
@@ -157,9 +167,12 @@ declare module "src/external/browserless" {
         scrape?: boolean;
         elements?: string;
         timeout?: number;
+        headers?: {
+            [key: string]: string;
+        };
     }) => Promise<import("axios").AxiosResponse<any, any>>;
 }
-declare module "src/types/notifications" {
+declare module "@types/notifications" {
     export interface Notifications {
         sendJobFinishNotification(jobId: string, jobName: string, results: string, options?: {
             title: string;
@@ -173,42 +186,82 @@ declare module "src/types/notifications" {
         }): Promise<any>;
     }
 }
-declare module "src/utils/loggers" {
-    const JobLogger: (id: string, name: string) => import("pino").Logger<never, boolean>;
-    const generalLogger: import("pino").Logger<never, boolean>;
+declare module "@utils/loggers" {
+    import { Logger } from "pino";
+    const JobLogger: (id: string, name: string) => Logger;
+    const generalLogger: Logger<never, boolean>;
     export default generalLogger;
     export { JobLogger };
 }
-declare module "src/notifications/gotify" {
-    import { Notifications } from "src/types/notifications";
+declare module "@notifications/gotify" {
+    import { Notifications } from "@types/notifications";
     export class GotifyService implements Notifications {
         sendJobFinishNotification(jobId: string, jobName: string, results: string, options?: {
-            title: string;
-            message: string;
-            priority: number;
+            title?: string;
+            message?: string;
+            priority?: number;
         }): Promise<any>;
         sendJobCrashNotification(jobId: string, jobName: string, error?: string, options?: {
-            title: string;
-            message: string;
-            priority: number;
+            title?: string;
+            message?: string;
+            priority?: number;
         }): Promise<any>;
     }
 }
 declare module "prisma/index" {
     import { PrismaClient } from "@generated/prisma";
+    import { PrismaClient as BasePrismaClient } from "@generated/prisma_base";
     /**
      * Create the prisma client
      */
-    const createPrismaClient: () => Promise<PrismaClient<import("@generated/prisma").Prisma.PrismaClientOptions, never, import("@generated/prisma/runtime/library").DefaultArgs>>;
+    const createPrismaClient: () => Promise<[PrismaClient<import("@generated/prisma").Prisma.PrismaClientOptions, never, import("@generated/prisma/runtime/library").DefaultArgs>, BasePrismaClient<import("@generated/prisma_base").Prisma.PrismaClientOptions, never, import("@generated/prisma_base/runtime/library").DefaultArgs>]>;
     /**
-     * Run prisma migrations programmatically, reuires that you have node and the prisma cli installed
+     * Run prisma migrations programmatically, requires that you have node and the prisma cli installed
      */
     const runMigrations: () => void;
-    export { createPrismaClient, runMigrations };
+    /**
+     * Run Base prisma migrations programmatically, requires that you have node and the prisma cli installed
+     */
+    const runBaseMigrations: () => void;
+    export { createPrismaClient, runBaseMigrations, runMigrations };
 }
-declare module "src/utils/CurrentRunsManager" {
-    import { JobDTO } from "src/types/models/job";
+declare module "@types/api/websocket" {
+    export interface JobNotification {
+        message: string;
+    }
+    export interface JobStartedNotification extends JobNotification {
+        jobId: string;
+        jobName: string;
+        runningJobCount: number;
+        isSingular: boolean;
+        averageTime: number;
+    }
+    export enum JobNotificationTopics {
+        JobStarted = "JobStarted",
+        JobFinished = "JobFinished",
+        JobFailed = "JobFailed",
+        Status = "Status",
+        NOOP = "NOOP"
+    }
+}
+declare module "@api/websocket/mainSocket.service" {
+    import { ElysiaWS } from "elysia/dist/ws";
+    import { JobDTO } from "@types/models/job";
     const _default: {
+        clients: {
+            [key: string]: ElysiaWS<any, {}>;
+        };
+        socket: any;
+        setWsClient(client: any, userId: string): void;
+        broadcastMessage(message: any): void;
+        sendJobStartingNotification(job: JobDTO, runningJobCount: number): void;
+        sendJobEndingNotification(job: JobDTO, runningJobCount: number): void;
+    };
+    export default _default;
+}
+declare module "@utils/CurrentRunsManager" {
+    import { JobDTO } from "@types/models/job";
+    const _default_1: {
         runningJobs: Record<string, Record<string, JobDTO>>;
         initialized: Record<string, boolean>;
         startJob(job: JobDTO): void;
@@ -217,10 +270,10 @@ declare module "src/utils/CurrentRunsManager" {
         isInitialized(job: JobDTO): boolean;
         getRunningJobCount(): number;
     };
-    export default _default;
+    export default _default_1;
 }
-declare module "src/initialization/jobsManager" {
-    import { JobDTO } from "src/types/models/job";
+declare module "@initialization/jobsManager" {
+    import { JobDTO } from "@types/models/job";
     const startAllJobs: () => Promise<{
         stats: {
             startedJobs: number;
@@ -243,7 +296,7 @@ declare module "src/initialization/jobsManager" {
     export const saveJobLogs: (id: string, name: string) => Promise<boolean>;
     export { startAllJobs };
 }
-declare module "src/initialization/ScheduleManager" {
+declare module "@initialization/ScheduleManager" {
     export function start(): Promise<{
         initResult: any;
         jobsStartResults: {
@@ -261,9 +314,11 @@ declare module "src/initialization/ScheduleManager" {
         };
     }>;
 }
-declare module "src/initialization/index" {
+declare module "@initialization/index" {
     import type { PrismaClient } from "@generated/prisma";
+    import { PrismaClient as BasePrismaClient } from "@generated/prisma_base";
     let prisma: PrismaClient;
+    let basePrisma: BasePrismaClient;
     export const initialize: () => Promise<{
         managerResults: {
             initResult: any;
@@ -282,9 +337,9 @@ declare module "src/initialization/index" {
             };
         };
     }>;
-    export { prisma };
+    export { basePrisma, prisma };
 }
-declare module "src/types/models/outputFiles" {
+declare module "@types/models/outputFiles" {
     export interface OutputFile {
         id: string;
         job_log_id: string;
@@ -327,12 +382,12 @@ declare module "src/types/models/outputFiles" {
         ttl: number;
     }
 }
-declare module "src/utils/dayJs" {
+declare module "@utils/dayJs" {
     import dayjs from "dayjs";
     export default dayjs;
 }
-declare module "src/repositories/cacheFiles" {
-    import { newCacheFileConfig } from "src/types/models/outputFiles";
+declare module "@repositories/cacheFiles" {
+    import { newCacheFileConfig } from "@types/models/outputFiles";
     export const saveCacheFile: ({ fileName, data, tags, type, jobLogId, ttl, newFile, }: newCacheFileConfig) => Promise<{
         dbOutput: {
             id: number;
@@ -388,8 +443,8 @@ declare module "src/repositories/cacheFiles" {
         fileName: string;
     }) => Promise<void>;
 }
-declare module "src/repositories/outputFiles" {
-    import { newOutputFileConfig } from "src/types/models/outputFiles";
+declare module "@repositories/outputFiles" {
+    import { newOutputFileConfig } from "@types/models/outputFiles";
     export const saveNewFile: ({ fileName, data, tags, type, jobLogId, newFile, }: newOutputFileConfig) => Promise<{
         dbOutput: {
             id: number;
@@ -440,7 +495,7 @@ declare module "src/repositories/outputFiles" {
         fileName: string;
     }) => Promise<void>;
 }
-declare module "src/utils/jobUtils" {
+declare module "@utils/jobUtils" {
     import { TSchema } from "elysia";
     export const Nullable: <T extends TSchema>(T: T) => import("@sinclair/typebox").TUnion<[T, import("@sinclair/typebox").TNull]>;
     /**
@@ -511,14 +566,14 @@ declare module "src/utils/jobUtils" {
      */
     export const findFiles: (dir: string, ext: string[], regex?: RegExp, files?: string[], result?: string[]) => string[];
 }
-declare module "src/utils/jobConsumerUtils" {
-    import { exportCacheFiles, exportResultsToFile, getNextJobExecution, sleep } from "src/utils/jobUtils";
+declare module "@utils/jobConsumerUtils" {
+    import { exportCacheFiles, exportResultsToFile, getNextJobExecution, sleep } from "@utils/jobUtils";
     export { exportCacheFiles, exportResultsToFile, getNextJobExecution, sleep };
 }
-declare module "src/types/models/job" {
-    import config from "src/config/config";
+declare module "@types/models/job" {
+    import config from "@config/config";
     import { schedule_job } from "@generated/prisma";
-    import * as JobConsumerUtils from "src/utils/jobConsumerUtils";
+    import * as JobConsumerUtils from "@utils/jobConsumerUtils";
     import { IScheduleJob, IScheduleJobLog } from "schedule-manager";
     import { ScheduleJobTable } from "schedule-manager/dist/Classes/Entities/ScheduleJob";
     export interface JobDTO extends IScheduleJob {
@@ -656,9 +711,9 @@ declare module "src/types/models/job" {
         config?: typeof config;
     }
 }
-declare module "src/types/models/proxy" {
+declare module "@types/models/proxy" {
     import { proxy_status } from "@generated/prisma";
-    import { JobDTO } from "src/types/models/job";
+    import { JobDTO } from "@types/models/job";
     export interface ProxyDTO {
         id: number;
         proxy_ip: string;
@@ -699,8 +754,8 @@ declare module "src/types/models/proxy" {
         status?: proxy_status;
     }
 }
-declare module "src/repositories/proxies" {
-    import { newProxyConfig, proxyUpdateConfig } from "src/types/models/proxy";
+declare module "@repositories/proxies" {
+    import { newProxyConfig, proxyUpdateConfig } from "@types/models/proxy";
     export const getAllProxies: ({ limit, offset, search, }: {
         limit?: number;
         offset?: number;
@@ -818,7 +873,7 @@ declare module "src/repositories/proxies" {
     export const removeProxyFromJob: (id: number, job_id: number) => Promise<import("@generated/prisma").Prisma.BatchPayload>;
     export const addProxyToJob: (id: number, job_ids: number[]) => Promise<void>;
 }
-declare module "src/utils/proxyUtils" {
+declare module "@utils/proxyUtils" {
     import type { AxiosInstance } from "axios";
     export const injectProxy: ({ jobId, axiosInstance, logger, }: {
         jobId: number;
@@ -837,11 +892,11 @@ declare module "src/utils/proxyUtils" {
         description: string;
     }>;
 }
-declare module "src/jobConsumer/jobConsumer" {
-    import * as BrowserlessService from "src/external/browserless";
-    import { GotifyService } from "src/notifications/gotify";
-    import { JobDTO, JobLogDTO, JobOptions } from "src/types/models/job";
-    import { exportCacheFiles, exportResultsToFile, getFromCache } from "src/utils/jobUtils";
+declare module "@jobConsumer/jobConsumer" {
+    import * as BrowserlessService from "@external/browserless";
+    import { GotifyService } from "@notifications/gotify";
+    import { JobDTO, JobLogDTO, JobOptions } from "@types/models/job";
+    import { exportCacheFiles, exportResultsToFile, getFromCache } from "@utils/jobUtils";
     import type { AxiosInstance } from "axios";
     const Consumer: typeof import("schedule-manager/dist/Classes/ScheduleJob/Consumer/JobConsumer").default;
     export class JobConsumer extends Consumer {
@@ -878,16 +933,16 @@ declare module "src/jobConsumer/jobConsumer" {
         }>;
     }
 }
-declare module "src/types/index" {
-    import { JobConsumer } from "src/jobConsumer/jobConsumer";
+declare module "@types/index" {
+    import { JobConsumer } from "@jobConsumer/jobConsumer";
     export type { JobConsumer };
-    export * from "src/types/models/job";
-    export * from "src/types/models/outputFiles";
-    export * from "src/types/models/proxy";
-    export * from "src/types/notifications";
+    export * from "@types/models/job";
+    export * from "@types/models/outputFiles";
+    export * from "@types/models/proxy";
+    export * from "@types/notifications";
     export * from "schedule-manager/dist";
 }
-declare module "src/types/api/api-responses" {
+declare module "@types/api/api-responses" {
     type APIResponse<TData = any> = {
         success: true;
         data: TData;
@@ -899,8 +954,8 @@ declare module "src/types/api/api-responses" {
     };
     export type { APIError, APIResponse };
 }
-declare module "src/types/api/index" {
-    export * from "src/types/api/api-responses";
+declare module "@types/api/index" {
+    export * from "@types/api/api-responses";
     interface ÌCookieOptions {
         httpOnly: boolean;
         secure: boolean;
@@ -911,5 +966,27 @@ declare module "src/types/api/index" {
     export interface ICookiesOptions {
         accessToken: ÌCookieOptions;
         refreshToken: ÌCookieOptions;
+    }
+}
+declare module "@types/models/user" {
+    export interface UserDTO {
+        id: number;
+        username: string;
+        email: string;
+        created_at: Date;
+        updated_at: Date;
+        cookie?: string;
+    }
+    export interface SignInUserDto {
+        email: string;
+        password: string;
+    }
+    export interface publicUserDTO {
+        username: string;
+        email: string;
+        id?: string;
+    }
+    export interface NewUserConfig extends SignInUserDto {
+        username: string;
     }
 }
