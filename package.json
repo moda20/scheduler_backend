@@ -38,7 +38,8 @@
     "pino-roll": "^3.0.0",
     "prisma": "^6.5.0",
     "qs": "^6.14.0",
-    "schedule-manager": "github:moda20/node-schedule-manager#Feature/typescript_rewrite_new_singular_event_logic"
+    "schedule-manager": "github:moda20/node-schedule-manager#Feature/typescript_rewrite_new_singular_event_logic",
+    "execSync": "^1.0.2"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
@@ -53,7 +54,6 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-simple-import-sort": "^10.0.0",
-    "execSync": "^1.0.2",
     "prettier": "^3.5.3"
   },
   "module": "src/index.js",
