@@ -52,11 +52,7 @@ const runMigrations = () => {
         throw err;
       }
     }
-    if (
-      statusOutput
-        .toString()
-        .includes("Following migration have not yet been applied")
-    ) {
+    if (statusOutput.toString().includes("have not yet been applied")) {
       try {
         execSync("prisma migrate deploy  -- -y", {
           env: { ...process.env, DATABASE_URL: dbUrl },
@@ -91,7 +87,7 @@ const runBaseMigrations = () => {
       statusOutput = execSync(
         "prisma migrate status --schema ./basePrisma/schema_base.prisma -- -y",
         {
-          env: { ...process.env, DATABASE_URL: dbUrl },
+          env: { ...process.env, BASE_DATABASE_URL: dbUrl },
           stdio: "pipe",
         },
       ).toString();
@@ -103,22 +99,17 @@ const runBaseMigrations = () => {
         throw err;
       }
     }
-    if (
-      statusOutput
-        .toString()
-        .includes("Following migration have not yet been applied")
-    ) {
+    if (statusOutput.toString().includes("have not yet been applied")) {
       try {
         execSync(
           "prisma migrate deploy --schema ./basePrisma/schema_base.prisma  -- -y",
           {
-            env: { ...process.env, DATABASE_URL: dbUrl },
+            env: { ...process.env, BASE_DATABASE_URL: dbUrl },
             stdio: "inherit",
           },
         )?.toString();
         logger.info("Migrations applied successfully.");
       } catch (err: any) {
-        console.log("err", err);
         if (err.status === 1) {
           logger.info("migrations applied");
         } else {
