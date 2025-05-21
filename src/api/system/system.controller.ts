@@ -9,6 +9,9 @@ import { file } from "bun";
 import qs from "qs";
 
 export const systemController = createElysia({ prefix: "/system" })
+  .onBeforeHandle(({ set }) => {
+    set.headers["content-type"] = "application/json; charset=utf-8";
+  })
   .onTransform((ctx) => {
     // @ts-ignore
     ctx.query = qs.parse(new URL(ctx.request.url).search.slice(1));
