@@ -8,7 +8,9 @@ import { createElysia } from "@utils/createElysia";
 import { CookieOptions } from "./guards/setup.jwt";
 
 export const auth = createElysia({ prefix: "/auth" })
-  .get("/", () => "This is the auth module!")
+  .onBeforeHandle(({ set }) => {
+    set.headers["content-type"] = "application/json; charset=utf-8";
+  })
   .post(
     "/login",
     async ({
