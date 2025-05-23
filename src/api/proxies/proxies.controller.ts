@@ -14,6 +14,9 @@ import { createElysia } from "@utils/createElysia";
 import qs from "qs";
 
 export const proxiesController = createElysia({ prefix: "/proxies" })
+  .onBeforeHandle(({ set }) => {
+    set.headers["content-type"] = "application/json; charset=utf-8";
+  })
   .onTransform((ctx) => {
     // @ts-ignore
     ctx.query = qs.parse(new URL(ctx.request.url).search.slice(1));
