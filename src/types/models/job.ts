@@ -243,6 +243,7 @@ export enum jobActions {
   CREATE = "CREATE",
   EXECUTE = "EXECUTE",
   UPDATE = "UPDATE",
+  REFRESH = "REFRESH",
 }
 
 export enum jobStatus {

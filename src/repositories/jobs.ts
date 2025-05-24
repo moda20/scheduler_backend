@@ -2,6 +2,7 @@ import config from "@config/config";
 import { prisma } from "@initialization/index";
 import {
   deleteJobStartAndEndActions,
+  fullStartAJob,
   registerJobStartAndEndActions,
   registerSingularJobStartAndEndActions,
   saveJobLogs,
@@ -134,16 +135,40 @@ export const updateJobStatus = async (id: number, newStatus: string) => {
 
 export const updateJobConfig = async (
   id: string,
-  newConfig: jobUpdateConfig,
+  newConfig?: jobUpdateConfig,
 ) => {
   const { job } = await ScheduleJobManager.getJobById(Number(id));
   if (job) {
-    job.setCronSetting(newConfig.cronSetting ?? job?.getCronSetting());
-    job.setName(newConfig.name ?? job?.getName());
-    job.setParam(newConfig.param ?? job?.getParam());
-    job.setConsumer(newConfig.consumer ?? job?.getConsumer());
+    job.setCronSetting(newConfig?.cronSetting ?? job?.getCronSetting());
+    job.setName(newConfig?.name ?? job?.getName());
+    job.setParam(newConfig?.param ?? job?.getParam());
+    job.setConsumer(newConfig?.consumer ?? job?.getConsumer());
     return await ScheduleJobManager.updateJob(Number(id), job);
   }
+};
+
+export const refreshJobRegistration = async (id: number | number[]) => {
+  const targetJobIds = Array.isArray(id) ? id : [id];
+  await Promise.all(
+    targetJobIds.map((id) => {
+      return Promise.resolve(ScheduleJobManager.stopJobById(id))
+        .then((jobStopped) => {
+          console.log("stopping job", jobStopped);
+          console.log("stopping job");
+          return unsubscribeFromAllLogs(id);
+        })
+        .then((f) => {
+          console.log(f);
+          return ScheduleJobManager.getJobById(id);
+        })
+        .then((jobDetails) => {
+          if (!jobDetails.job) {
+            throw "Job not found";
+          }
+          return fullStartAJob(jobDetails.job);
+        });
+    }),
+  );
 };
 
 export const jobActionExecution = async (
@@ -245,6 +270,9 @@ export const jobActionExecution = async (
         throw "No config provided";
       }
       return updateJobConfig(id.toString(), config);
+    }
+    case jobActions.REFRESH: {
+      return refreshJobRegistration(id);
     }
   }
 };

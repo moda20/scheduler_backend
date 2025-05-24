@@ -23,26 +23,14 @@ const startAllJobs = () => {
         jobs.map((job) => {
           jobStats.foundJobs++;
           if (job.getStats() === jobStatus.STARTED) {
-            return ScheduleJobManager.startJobById(job.getId()!)
-              .then((d: { success: boolean }) => {
-                if (d.success && job.getId()) {
-                  registerJobStartAndEndActions(job);
-                  return saveJobLogs(
-                    job.getId()!.toString(),
-                    job.getName(),
-                  ).then(() => d);
-                } else {
-                  logger.error("Error when starting Job");
-                  logger.error(d);
-                  jobStats.errorStartingJobs++;
-                  return d;
-                }
+            return fullStartAJob(job)
+              .then((res) => {
+                jobStats.startedJobs++;
+                return res;
               })
-              .then((jobStatus) => {
-                if (jobStatus.success) {
-                  jobStats.startedJobs++;
-                }
-                return jobStatus;
+              .catch((err) => {
+                jobStats.errorStartingJobs++;
+                return err;
               });
           } else {
             return Promise.resolve({
@@ -59,6 +47,18 @@ const startAllJobs = () => {
       });
     },
   );
+};
+
+export const fullStartAJob = async (job: JobDTO) => {
+  const d = await ScheduleJobManager.startJobById(job.getId()!);
+  if (d.success && job.getId()) {
+    registerJobStartAndEndActions(job);
+    return saveJobLogs(job.getId()!.toString(), job.getName()).then(() => d);
+  } else {
+    logger.error("Error when starting Job");
+    logger.error(d);
+    throw d;
+  }
 };
 
 export const registerJobStartAndEndActions = (job: JobDTO) => {

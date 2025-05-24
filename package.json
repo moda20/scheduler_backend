@@ -12,7 +12,8 @@
     "dev": "bun run --watch src/index.ts",
     "lint": "eslint --ext .ts src",
     "build": "bun build src/index.ts --target=bun --outdir ./build",
-    "build:types": "(tsc --project ./tsTypesconfig.json || true) && sed -i 's#src/#@#g' extraTypes/types.d.ts"
+    "build:types": "(tsc --project ./tsTypesconfig.json || true) && sed -i 's#src/#@#g' extraTypes/types.d.ts",
+    "build:types:osx": "(tsc --project ./tsTypesconfig.json || true) && sed -i '' 's#src/#@#g' extraTypes/types.d.ts"
   },
   "dependencies": {
     "@elysiajs/cookie": "^0.8.0",
