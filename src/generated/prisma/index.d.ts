@@ -4609,12 +4609,16 @@ export namespace Prisma {
     id: number | null
     job_id: number | null
     proxy_id: number | null
+    use_count: number | null
+    injection_count: number | null
   }
 
   export type Proxy_jobSumAggregateOutputType = {
     id: number | null
     job_id: number | null
     proxy_id: number | null
+    use_count: number | null
+    injection_count: number | null
   }
 
   export type Proxy_jobMinAggregateOutputType = {
@@ -4623,6 +4627,8 @@ export namespace Prisma {
     proxy_id: number | null
     created_at: Date | null
     updated_at: Date | null
+    use_count: number | null
+    injection_count: number | null
   }
 
   export type Proxy_jobMaxAggregateOutputType = {
@@ -4631,6 +4637,8 @@ export namespace Prisma {
     proxy_id: number | null
     created_at: Date | null
     updated_at: Date | null
+    use_count: number | null
+    injection_count: number | null
   }
 
   export type Proxy_jobCountAggregateOutputType = {
@@ -4639,6 +4647,8 @@ export namespace Prisma {
     proxy_id: number
     created_at: number
     updated_at: number
+    use_count: number
+    injection_count: number
     _all: number
   }
 
@@ -4647,12 +4657,16 @@ export namespace Prisma {
     id?: true
     job_id?: true
     proxy_id?: true
+    use_count?: true
+    injection_count?: true
   }
 
   export type Proxy_jobSumAggregateInputType = {
     id?: true
     job_id?: true
     proxy_id?: true
+    use_count?: true
+    injection_count?: true
   }
 
   export type Proxy_jobMinAggregateInputType = {
@@ -4661,6 +4675,8 @@ export namespace Prisma {
     proxy_id?: true
     created_at?: true
     updated_at?: true
+    use_count?: true
+    injection_count?: true
   }
 
   export type Proxy_jobMaxAggregateInputType = {
@@ -4669,6 +4685,8 @@ export namespace Prisma {
     proxy_id?: true
     created_at?: true
     updated_at?: true
+    use_count?: true
+    injection_count?: true
   }
 
   export type Proxy_jobCountAggregateInputType = {
@@ -4677,6 +4695,8 @@ export namespace Prisma {
     proxy_id?: true
     created_at?: true
     updated_at?: true
+    use_count?: true
+    injection_count?: true
     _all?: true
   }
 
@@ -4772,6 +4792,8 @@ export namespace Prisma {
     proxy_id: number
     created_at: Date
     updated_at: Date
+    use_count: number
+    injection_count: number
     _count: Proxy_jobCountAggregateOutputType | null
     _avg: Proxy_jobAvgAggregateOutputType | null
     _sum: Proxy_jobSumAggregateOutputType | null
@@ -4799,6 +4821,8 @@ export namespace Prisma {
     proxy_id?: boolean
     created_at?: boolean
     updated_at?: boolean
+    use_count?: boolean
+    injection_count?: boolean
     schedule_job?: boolean | schedule_jobDefaultArgs<ExtArgs>
     proxy?: boolean | proxyDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["proxy_job"]>
@@ -4811,9 +4835,11 @@ export namespace Prisma {
     proxy_id?: boolean
     created_at?: boolean
     updated_at?: boolean
+    use_count?: boolean
+    injection_count?: boolean
   }
 
-  export type proxy_jobOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "job_id" | "proxy_id" | "created_at" | "updated_at", ExtArgs["result"]["proxy_job"]>
+  export type proxy_jobOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "job_id" | "proxy_id" | "created_at" | "updated_at" | "use_count" | "injection_count", ExtArgs["result"]["proxy_job"]>
   export type proxy_jobInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     schedule_job?: boolean | schedule_jobDefaultArgs<ExtArgs>
     proxy?: boolean | proxyDefaultArgs<ExtArgs>
@@ -4831,6 +4857,8 @@ export namespace Prisma {
       proxy_id: number
       created_at: Date
       updated_at: Date
+      use_count: number
+      injection_count: number
     }, ExtArgs["result"]["proxy_job"]>
     composites: {}
   }
@@ -5207,6 +5235,8 @@ export namespace Prisma {
     readonly proxy_id: FieldRef<"proxy_job", 'Int'>
     readonly created_at: FieldRef<"proxy_job", 'DateTime'>
     readonly updated_at: FieldRef<"proxy_job", 'DateTime'>
+    readonly use_count: FieldRef<"proxy_job", 'Int'>
+    readonly injection_count: FieldRef<"proxy_job", 'Int'>
   }
     
 
@@ -8757,7 +8787,9 @@ export namespace Prisma {
     job_id: 'job_id',
     proxy_id: 'proxy_id',
     created_at: 'created_at',
-    updated_at: 'updated_at'
+    updated_at: 'updated_at',
+    use_count: 'use_count',
+    injection_count: 'injection_count'
   };
 
   export type Proxy_jobScalarFieldEnum = (typeof Proxy_jobScalarFieldEnum)[keyof typeof Proxy_jobScalarFieldEnum]
@@ -9198,6 +9230,8 @@ export namespace Prisma {
     proxy_id?: IntFilter<"proxy_job"> | number
     created_at?: DateTimeFilter<"proxy_job"> | Date | string
     updated_at?: DateTimeFilter<"proxy_job"> | Date | string
+    use_count?: IntFilter<"proxy_job"> | number
+    injection_count?: IntFilter<"proxy_job"> | number
     schedule_job?: XOR<Schedule_jobScalarRelationFilter, schedule_jobWhereInput>
     proxy?: XOR<ProxyScalarRelationFilter, proxyWhereInput>
   }
@@ -9208,6 +9242,8 @@ export namespace Prisma {
     proxy_id?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
+    use_count?: SortOrder
+    injection_count?: SortOrder
     schedule_job?: schedule_jobOrderByWithRelationInput
     proxy?: proxyOrderByWithRelationInput
   }
@@ -9221,6 +9257,8 @@ export namespace Prisma {
     proxy_id?: IntFilter<"proxy_job"> | number
     created_at?: DateTimeFilter<"proxy_job"> | Date | string
     updated_at?: DateTimeFilter<"proxy_job"> | Date | string
+    use_count?: IntFilter<"proxy_job"> | number
+    injection_count?: IntFilter<"proxy_job"> | number
     schedule_job?: XOR<Schedule_jobScalarRelationFilter, schedule_jobWhereInput>
     proxy?: XOR<ProxyScalarRelationFilter, proxyWhereInput>
   }, "id">
@@ -9231,6 +9269,8 @@ export namespace Prisma {
     proxy_id?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
+    use_count?: SortOrder
+    injection_count?: SortOrder
     _count?: proxy_jobCountOrderByAggregateInput
     _avg?: proxy_jobAvgOrderByAggregateInput
     _max?: proxy_jobMaxOrderByAggregateInput
@@ -9247,6 +9287,8 @@ export namespace Prisma {
     proxy_id?: IntWithAggregatesFilter<"proxy_job"> | number
     created_at?: DateTimeWithAggregatesFilter<"proxy_job"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"proxy_job"> | Date | string
+    use_count?: IntWithAggregatesFilter<"proxy_job"> | number
+    injection_count?: IntWithAggregatesFilter<"proxy_job"> | number
   }
 
   export type schedule_jobWhereInput = {
@@ -9751,6 +9793,8 @@ export namespace Prisma {
   export type proxy_jobCreateInput = {
     created_at?: Date | string
     updated_at?: Date | string
+    use_count?: number
+    injection_count?: number
     schedule_job: schedule_jobCreateNestedOneWithoutProxiesInput
     proxy: proxyCreateNestedOneWithoutJobsInput
   }
@@ -9761,11 +9805,15 @@ export namespace Prisma {
     proxy_id: number
     created_at?: Date | string
     updated_at?: Date | string
+    use_count?: number
+    injection_count?: number
   }
 
   export type proxy_jobUpdateInput = {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    use_count?: IntFieldUpdateOperationsInput | number
+    injection_count?: IntFieldUpdateOperationsInput | number
     schedule_job?: schedule_jobUpdateOneRequiredWithoutProxiesNestedInput
     proxy?: proxyUpdateOneRequiredWithoutJobsNestedInput
   }
@@ -9776,6 +9824,8 @@ export namespace Prisma {
     proxy_id?: IntFieldUpdateOperationsInput | number
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    use_count?: IntFieldUpdateOperationsInput | number
+    injection_count?: IntFieldUpdateOperationsInput | number
   }
 
   export type proxy_jobCreateManyInput = {
@@ -9784,11 +9834,15 @@ export namespace Prisma {
     proxy_id: number
     created_at?: Date | string
     updated_at?: Date | string
+    use_count?: number
+    injection_count?: number
   }
 
   export type proxy_jobUpdateManyMutationInput = {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    use_count?: IntFieldUpdateOperationsInput | number
+    injection_count?: IntFieldUpdateOperationsInput | number
   }
 
   export type proxy_jobUncheckedUpdateManyInput = {
@@ -9797,6 +9851,8 @@ export namespace Prisma {
     proxy_id?: IntFieldUpdateOperationsInput | number
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    use_count?: IntFieldUpdateOperationsInput | number
+    injection_count?: IntFieldUpdateOperationsInput | number
   }
 
   export type schedule_jobCreateInput = {
@@ -10428,12 +10484,16 @@ export namespace Prisma {
     proxy_id?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
+    use_count?: SortOrder
+    injection_count?: SortOrder
   }
 
   export type proxy_jobAvgOrderByAggregateInput = {
     id?: SortOrder
     job_id?: SortOrder
     proxy_id?: SortOrder
+    use_count?: SortOrder
+    injection_count?: SortOrder
   }
 
   export type proxy_jobMaxOrderByAggregateInput = {
@@ -10442,6 +10502,8 @@ export namespace Prisma {
     proxy_id?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
+    use_count?: SortOrder
+    injection_count?: SortOrder
   }
 
   export type proxy_jobMinOrderByAggregateInput = {
@@ -10450,12 +10512,16 @@ export namespace Prisma {
     proxy_id?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
+    use_count?: SortOrder
+    injection_count?: SortOrder
   }
 
   export type proxy_jobSumOrderByAggregateInput = {
     id?: SortOrder
     job_id?: SortOrder
     proxy_id?: SortOrder
+    use_count?: SortOrder
+    injection_count?: SortOrder
   }
 
   export type FloatNullableFilter<$PrismaModel = never> = {
@@ -11412,6 +11478,8 @@ export namespace Prisma {
   export type proxy_jobCreateWithoutProxyInput = {
     created_at?: Date | string
     updated_at?: Date | string
+    use_count?: number
+    injection_count?: number
     schedule_job: schedule_jobCreateNestedOneWithoutProxiesInput
   }
 
@@ -11420,6 +11488,8 @@ export namespace Prisma {
     job_id: number
     created_at?: Date | string
     updated_at?: Date | string
+    use_count?: number
+    injection_count?: number
   }
 
   export type proxy_jobCreateOrConnectWithoutProxyInput = {
@@ -11457,6 +11527,8 @@ export namespace Prisma {
     proxy_id?: IntFilter<"proxy_job"> | number
     created_at?: DateTimeFilter<"proxy_job"> | Date | string
     updated_at?: DateTimeFilter<"proxy_job"> | Date | string
+    use_count?: IntFilter<"proxy_job"> | number
+    injection_count?: IntFilter<"proxy_job"> | number
   }
 
   export type schedule_jobCreateWithoutProxiesInput = {
@@ -11628,6 +11700,8 @@ export namespace Prisma {
   export type proxy_jobCreateWithoutSchedule_jobInput = {
     created_at?: Date | string
     updated_at?: Date | string
+    use_count?: number
+    injection_count?: number
     proxy: proxyCreateNestedOneWithoutJobsInput
   }
 
@@ -11636,6 +11710,8 @@ export namespace Prisma {
     proxy_id: number
     created_at?: Date | string
     updated_at?: Date | string
+    use_count?: number
+    injection_count?: number
   }
 
   export type proxy_jobCreateOrConnectWithoutSchedule_jobInput = {
@@ -12017,11 +12093,15 @@ export namespace Prisma {
     job_id: number
     created_at?: Date | string
     updated_at?: Date | string
+    use_count?: number
+    injection_count?: number
   }
 
   export type proxy_jobUpdateWithoutProxyInput = {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    use_count?: IntFieldUpdateOperationsInput | number
+    injection_count?: IntFieldUpdateOperationsInput | number
     schedule_job?: schedule_jobUpdateOneRequiredWithoutProxiesNestedInput
   }
 
@@ -12030,6 +12110,8 @@ export namespace Prisma {
     job_id?: IntFieldUpdateOperationsInput | number
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    use_count?: IntFieldUpdateOperationsInput | number
+    injection_count?: IntFieldUpdateOperationsInput | number
   }
 
   export type proxy_jobUncheckedUpdateManyWithoutProxyInput = {
@@ -12037,6 +12119,8 @@ export namespace Prisma {
     job_id?: IntFieldUpdateOperationsInput | number
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    use_count?: IntFieldUpdateOperationsInput | number
+    injection_count?: IntFieldUpdateOperationsInput | number
   }
 
   export type schedule_job_logCreateManySchedule_jobInput = {
@@ -12053,6 +12137,8 @@ export namespace Prisma {
     proxy_id: number
     created_at?: Date | string
     updated_at?: Date | string
+    use_count?: number
+    injection_count?: number
   }
 
   export type schedule_job_logUpdateWithoutSchedule_jobInput = {
@@ -12091,6 +12177,8 @@ export namespace Prisma {
   export type proxy_jobUpdateWithoutSchedule_jobInput = {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    use_count?: IntFieldUpdateOperationsInput | number
+    injection_count?: IntFieldUpdateOperationsInput | number
     proxy?: proxyUpdateOneRequiredWithoutJobsNestedInput
   }
 
@@ -12099,6 +12187,8 @@ export namespace Prisma {
     proxy_id?: IntFieldUpdateOperationsInput | number
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    use_count?: IntFieldUpdateOperationsInput | number
+    injection_count?: IntFieldUpdateOperationsInput | number
   }
 
   export type proxy_jobUncheckedUpdateManyWithoutSchedule_jobInput = {
@@ -12106,6 +12196,8 @@ export namespace Prisma {
     proxy_id?: IntFieldUpdateOperationsInput | number
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    use_count?: IntFieldUpdateOperationsInput | number
+    injection_count?: IntFieldUpdateOperationsInput | number
   }
 
   export type cache_filesCreateManySchedule_job_logInput = {

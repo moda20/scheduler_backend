@@ -172,3 +172,29 @@ export const addProxyToJob = async (id: number, job_ids: number[]) => {
     });
   });
 };
+
+export const incrementProxyInjection = (proxyJobId: number) => {
+  return prisma.proxy_job.update({
+    where: {
+      id: proxyJobId,
+    },
+    data: {
+      injection_count: {
+        increment: 1,
+      },
+    },
+  });
+};
+
+export const incrementProxyUsage = (proxyJobId: number) => {
+  return prisma.proxy_job.update({
+    where: {
+      id: proxyJobId,
+    },
+    data: {
+      use_count: {
+        increment: 1,
+      },
+    },
+  });
+};
