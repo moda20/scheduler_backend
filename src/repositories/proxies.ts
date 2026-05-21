@@ -243,5 +243,14 @@ export const testProxy = async (
 
   injectProxyIntoInstance(proxy, axiosInstance, syslog.debug);
 
-  return axiosInstance.get(targetUrl);
+  return axiosInstance.get(targetUrl).catch((err) => {
+    const sysLog = eventLog(LogEventNames.SysLogEvent);
+    sysLog.error(
+      `Proxy ${proxy.proxy_ip}:${proxy.proxy_port} test failed: ${err.message}`,
+      {
+        eventName: "PROXY_TEST_ERROR",
+      },
+    );
+    throw err;
+  });
 };
