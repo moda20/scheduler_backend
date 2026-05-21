@@ -1,19 +1,28 @@
+import config from "@config/config";
+import { proxy_status } from "@generated/prisma";
 import { prisma } from "@initialization/index";
+import { LogEventNames } from "@typesDef/api/jobs";
 import { newProxyConfig, proxyUpdateConfig } from "@typesDef/models/proxy";
+import { APIError } from "@utils/ErrorHandler";
+import { ProxyTestingHttpService } from "@utils/httpRequestConfig";
+import { eventLog } from "@utils/loggers";
+import { injectProxyIntoInstance } from "@utils/proxyUtils";
+import { CreateAxiosDefaults } from "axios";
 
+const REPO_NAME = "Proxy repository";
 export const getAllProxies = async ({
   limit,
   offset,
   search,
+  excludeDisabled,
 }: {
   limit?: number;
   offset?: number;
   search?: string;
+  excludeDisabled?: boolean;
 }) => {
-  return prisma.proxy.findMany({
-    take: limit,
-    skip: offset,
-    where: search
+  const whereCondition = {
+    ...(search
       ? {
           OR: [
             { proxy_ip: { contains: search } },
@@ -23,7 +32,13 @@ export const getAllProxies = async ({
             { description: { contains: search } },
           ],
         }
-      : undefined,
+      : {}),
+    ...(excludeDisabled ? { status: proxy_status.active } : {}),
+  };
+  return prisma.proxy.findMany({
+    take: limit,
+    skip: offset,
+    where: whereCondition,
     omit: {
       password: true,
     },
@@ -197,4 +212,36 @@ export const incrementProxyUsage = (proxyJobId: number) => {
       },
     },
   });
+};
+
+export const testProxy = async (
+  proxyId: number,
+  axiosConfig?: CreateAxiosDefaults,
+) => {
+  const proxy = await prisma.proxy.findUnique({
+    where: {
+      id: proxyId,
+    },
+  });
+  if (!proxy) {
+    throw new APIError("Proxy not found", REPO_NAME);
+  }
+
+  const targetUrl = config.safeGet("proxies.proxyTestingUrl", null);
+  if (!targetUrl) {
+    throw new APIError(
+      "Proxy testing url not set, check configuration",
+      REPO_NAME,
+    );
+  }
+  const syslog = eventLog(LogEventNames.SysLogEvent);
+
+  const axiosInstance = ProxyTestingHttpService.create({
+    baseURL: targetUrl,
+    ...axiosConfig,
+  });
+
+  injectProxyIntoInstance(proxy, axiosInstance, syslog.debug);
+
+  return axiosInstance.get(targetUrl);
 };

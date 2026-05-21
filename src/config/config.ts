@@ -62,6 +62,12 @@ const config = convict({
       env: "JOBS_FILES_EXTENSIONS",
       nullable: false,
     },
+    seedSystemJobs: {
+      doc: "Whether to seed the system jobs. This is made to only run once, can be retriggered by setting this to true and restarting",
+      format: Boolean,
+      default: true,
+      env: "SEED_SYSTEM_JOBS",
+    },
   },
   files: {
     exportOutputFiles: {
@@ -295,6 +301,15 @@ const config = convict({
       env: "GRAFANA_LOKI_PASSWORD",
       nullable: true,
       sensitive: true,
+    },
+  },
+  proxies: {
+    proxyTestingUrl: {
+      doc: "The proxy testing url",
+      format: String,
+      default: null,
+      env: "PROXY_TESTING_URL",
+      nullable: true,
     },
   },
   encryption: {

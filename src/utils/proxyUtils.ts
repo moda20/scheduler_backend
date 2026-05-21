@@ -1,4 +1,4 @@
-import { proxy_job } from "@generated/prisma";
+import { proxy, proxy_job } from "@generated/prisma";
 import {
   getJobProxies,
   incrementProxyInjection,
@@ -6,7 +6,49 @@ import {
 } from "@repositories/proxies";
 import { proxyPickingStrategy } from "@typesDef/proxies";
 import type { AxiosInstance } from "axios";
-import { SocksProxyAgent } from "socks-proxy-agent";
+import { fetch as bunFetch } from "netbun";
+
+export const injectProxyIntoInstance = (
+  proxy: proxy,
+  axiosInstance: AxiosInstance,
+  logger?: (x: any) => void,
+) => {
+  const isSocksProxy = proxy.protocol?.includes("socks");
+  if (isSocksProxy) {
+    logger &&
+      logger(
+        "!!WARNING!! Using socks proxy will use a custom fetch function. Check here : https://github.com/oven-sh/bun/issues/16812",
+      );
+    const proxyUrl = `${proxy.protocol}://${proxy.username ? proxy.username + ":" + proxy.password + "@" : ""}${proxy.proxy_ip}:${proxy.proxy_port}`;
+    // TODO as of this addition, bun doesn't fully oir partially support socks5 proxies,
+    // so we are going to use a custom fetch function to handle the socks for now.
+    // socks proxy is inadvised for now, as this might expose more problems in the future
+    axiosInstance.defaults.adapter = "fetch";
+
+    axiosInstance.defaults.env = {
+      fetch: (req, init) => {
+        return bunFetch(req, {
+          ...init,
+          proxy: proxyUrl,
+        });
+      },
+    };
+  } else {
+    axiosInstance.defaults.proxy = {
+      host: proxy.proxy_ip,
+      port: proxy.proxy_port,
+      protocol: proxy.protocol,
+      auth: proxy.username
+        ? {
+            username: proxy.username,
+            password: proxy.password,
+          }
+        : undefined,
+    };
+  }
+
+  return axiosInstance;
+};
 
 export const getProxyConfigWithStrategy = (
   proxies: proxy_job[],
@@ -60,29 +102,8 @@ export const injectProxy = async ({
 
     if (proxy) {
       logger && logger(`proxy ${proxy.proxy_ip}:${proxy.proxy_port} injected`);
-      const isSocksProxy = proxy.protocol?.includes("socks");
-      if (isSocksProxy) {
-        logger(
-          "!!WARNING!! Using socks proxy will replace your default https and https agent",
-        );
-        const proxyAgent = new SocksProxyAgent(
-          `${proxy.protocol}://${proxy.proxy_ip}:${proxy.proxy_port}`,
-        );
-        axiosInstance.defaults.httpAgent = proxyAgent;
-        axiosInstance.defaults.httpsAgent = proxyAgent;
-      } else {
-        axiosInstance.defaults.proxy = {
-          host: proxy.proxy_ip,
-          port: proxy.proxy_port,
-          protocol: proxy.protocol,
-          auth: proxy.username
-            ? {
-                username: proxy.username,
-                password: proxy.password,
-              }
-            : undefined,
-        };
-      }
+
+      injectProxyIntoInstance(proxy, axiosInstance, logger);
 
       const proxyUsageInterceptor = axiosInstance.interceptors.request.use(
         (config) => {

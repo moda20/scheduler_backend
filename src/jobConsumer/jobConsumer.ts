@@ -88,13 +88,13 @@ export class JobConsumer extends Consumer {
     );
   }
 
-  async injectProxies(proxyConfig: jobProxyConfig) {
+  async injectProxies(proxyConfig?: jobProxyConfig) {
     return injectProxy({
       jobId: Number(this.job?.id),
       axiosInstance: this.axios,
       logger: (v: any) => this.logEvent(v),
-      proxyStrategy: proxyConfig.proxyStrategy,
-      targetProxyId: proxyConfig.targetProxyId,
+      proxyStrategy: proxyConfig?.proxyStrategy,
+      targetProxyId: proxyConfig?.targetProxyId,
     })
       .then((proxy) => {
         if (proxy) {
