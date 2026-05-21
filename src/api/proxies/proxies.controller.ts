@@ -132,8 +132,9 @@ export const proxiesController = createElysia({ prefix: "/proxies" })
   )
   .post(
     "/testProxy",
-    ({ body }) => {
-      return testProxy(Number(body.id));
+    async ({ body }) => {
+      const { status } = await testProxy(Number(body.id));
+      return status;
     },
     {
       body: z.object({
