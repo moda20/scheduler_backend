@@ -7,6 +7,7 @@ import { APIError } from "@utils/ErrorHandler";
 import { ProxyTestingHttpService } from "@utils/httpRequestConfig";
 import defaultRedactor from "@utils/httpUtils/redactors";
 import { eventLog } from "@utils/loggers";
+import logger from "@utils/loggers";
 import { injectProxyIntoInstance } from "@utils/proxyUtils";
 import { CreateAxiosDefaults } from "axios";
 
@@ -253,4 +254,13 @@ export const testProxy = async (
     );
     throw defaultRedactor.redactError(err);
   });
+};
+
+export const testProxyViaTheAPI = async (proxyId: number) => {
+  try {
+    return await testProxy(proxyId);
+  } catch (err: any) {
+    logger.error(err);
+    throw new APIError(err.message ?? err?.toString(), REPO_NAME);
+  }
 };
