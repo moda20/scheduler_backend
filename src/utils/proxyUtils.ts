@@ -4,7 +4,9 @@ import {
   incrementProxyInjection,
   incrementProxyUsage,
 } from "@repositories/proxies";
+import { LogEventNames } from "@typesDef/api/jobs";
 import { proxyPickingStrategy } from "@typesDef/proxies";
+import { eventLog } from "@utils/loggers";
 import type { AxiosInstance } from "axios";
 import { fetch as bunFetch } from "netbun";
 
@@ -61,10 +63,10 @@ export const getProxyConfigWithStrategy = (
       return proxies[Math.floor(Math.random() * proxies.length)];
     case proxyPickingStrategy.ROUND_ROBIN:
       return proxies.sort((a, b) =>
-        a.injection_count < b.injection_count ? 1 : -1,
+        a.injection_count > b.injection_count ? 1 : -1,
       )[0];
     case proxyPickingStrategy.LEAST_USED:
-      return proxies.sort((a, b) => (a.use_count < b.use_count ? 1 : -1))[0];
+      return proxies.sort((a, b) => (a.use_count > b.use_count ? 1 : -1))[0];
     case proxyPickingStrategy.SPECIFIC:
       return proxies.find((p) => p.proxy_id === targetId);
     default:
@@ -85,6 +87,7 @@ export const injectProxy = async ({
   proxyStrategy?: proxyPickingStrategy;
   targetProxyId?: number;
 }) => {
+  const sysLog = eventLog(LogEventNames.SysLogEvent);
   const targetJob = await getJobProxies(Number(jobId));
   if (targetJob?.proxies?.length) {
     type extPRoxyJob = (typeof targetJob.proxies)[0];
@@ -107,17 +110,22 @@ export const injectProxy = async ({
 
       const proxyUsageInterceptor = axiosInstance.interceptors.request.use(
         (config) => {
-          incrementProxyUsage(proxyJob.id).then();
+          incrementProxyUsage(proxyJob.id).then().catch(sysLog.warn);
           return config;
         },
       );
 
-      incrementProxyInjection(proxyJob.id).then();
+      incrementProxyInjection(proxyJob.id).then().catch(sysLog.warn);
       return {
         ...proxy,
         password: "***",
         proxyUsageInterceptor,
       };
+    } else {
+      logger &&
+        logger.warn(
+          `No proxy was picked based on strategy : ${proxyPickingStrategy}`,
+        );
     }
   }
 };

@@ -5,6 +5,7 @@ import { LogEventNames } from "@typesDef/api/jobs";
 import { newProxyConfig, proxyUpdateConfig } from "@typesDef/models/proxy";
 import { APIError } from "@utils/ErrorHandler";
 import { ProxyTestingHttpService } from "@utils/httpRequestConfig";
+import defaultRedactor from "@utils/httpUtils/redactors";
 import { eventLog } from "@utils/loggers";
 import { injectProxyIntoInstance } from "@utils/proxyUtils";
 import { CreateAxiosDefaults } from "axios";
@@ -250,6 +251,6 @@ export const testProxy = async (
         eventName: "PROXY_TEST_ERROR",
       },
     );
-    throw err;
+    throw defaultRedactor.redactError(err);
   });
 };

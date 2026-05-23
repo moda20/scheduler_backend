@@ -3,6 +3,8 @@ import { getAllProxies, testProxy } from "@repositories/proxies";
 import { PromisePool } from "@supercharge/promise-pool";
 import { JobDTO, JobLogDTO, JobOptions } from "@typesDef/models/job";
 import dayJs from "@utils/dayJs";
+import defaultRedactor from "@utils/httpUtils/redactors";
+import { z } from "zod";
 
 interface proxyTestingJobParams {
   excludeDisabledProxies?: boolean;
@@ -10,17 +12,26 @@ interface proxyTestingJobParams {
   requestTimeout?: number;
 }
 
+const proxyTestingJobParamsSchema = z.object({
+  excludeDisabledProxies: z.boolean().optional(),
+  concurrentTestRequests: z.number().optional(),
+  requestTimeout: z.number().optional(),
+});
+
 class ProxyTestJob extends JobConsumer {
   constructor() {
     super();
   }
 
-  async run(job: JobDTO, jobLog: JobLogDTO, options: JobOptions) {
+  async run(job: JobDTO, jobLog: JobLogDTO) {
+    const parsedConfig = proxyTestingJobParamsSchema.parse(
+      job.param?.config ?? {},
+    );
     const config: proxyTestingJobParams = {
       excludeDisabledProxies: true,
       concurrentTestRequests: 1,
       requestTimeout: 60000,
-      ...(job.param?.config ?? {}),
+      ...parsedConfig,
     };
     const isTestUrlValid = !!this.options?.config?.proxies?.proxyTestingUrl;
     if (!isTestUrlValid) {

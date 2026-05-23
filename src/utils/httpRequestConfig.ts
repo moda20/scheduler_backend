@@ -43,4 +43,6 @@ export const NtfyHttpService = createHttpService({
   },
   timeout: 60000,
 });
-export const ProxyTestingHttpService = axios.create({});
+export const ProxyTestingHttpService = axios.create({
+  timeout: 60000,
+});
