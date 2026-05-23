@@ -8,7 +8,7 @@ import {
   getAllProxies,
   getProxy,
   removeProxyFromJob,
-  testProxy,
+  testProxyViaTheAPI,
   updateProxy,
 } from "@repositories/proxies";
 import { createElysia } from "@utils/createElysia";
@@ -133,7 +133,7 @@ export const proxiesController = createElysia({ prefix: "/proxies" })
   .post(
     "/testProxy",
     async ({ body }) => {
-      const { status } = await testProxy(Number(body.id));
+      const { status } = await testProxyViaTheAPI(Number(body.id));
       return status;
     },
     {
