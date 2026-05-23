@@ -138,7 +138,7 @@ export const proxiesController = createElysia({ prefix: "/proxies" })
     },
     {
       body: z.object({
-        id: z.coerce.number().positive(),
+        id: z.coerce.number().positive().int(),
       }),
     },
   );
