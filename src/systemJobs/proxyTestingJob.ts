@@ -1,9 +1,8 @@
 import { JobConsumer } from "@jobConsumer/jobConsumer";
 import { getAllProxies, testProxy } from "@repositories/proxies";
 import { PromisePool } from "@supercharge/promise-pool";
-import { JobDTO, JobLogDTO, JobOptions } from "@typesDef/models/job";
+import { JobDTO, JobLogDTO } from "@typesDef/models/job";
 import dayJs from "@utils/dayJs";
-import defaultRedactor from "@utils/httpUtils/redactors";
 import { z } from "zod";
 
 interface proxyTestingJobParams {
