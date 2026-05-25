@@ -68,9 +68,11 @@ const verifyMasterKey = () => {
 export const getConvictSchemaProperties = ({
   encryptedValues = true,
   onlyMirroredValues = true,
+  withJobHiddenProperties = true,
 }: {
   encryptedValues?: boolean;
   onlyMirroredValues?: boolean;
+  withJobHiddenProperties?: boolean;
 } = {}) => {
   const propertiesValues: FlattenedProperties = flattenedProperties(
     config.getProperties(),
@@ -103,6 +105,9 @@ export const getConvictSchemaProperties = ({
       propertiesValues[pvk].value = propertiesValues[pvk].value?.toString();
     }
     if (onlyMirroredValues && !propertiesValues[pvk].db_mirror) {
+      delete propertiesValues[pvk];
+    }
+    if (!withJobHiddenProperties && propertiesValues[pvk].job_hidden) {
       delete propertiesValues[pvk];
     }
   });

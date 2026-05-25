@@ -3,6 +3,7 @@ export interface FlattenedProperties {
     value: any;
     is_encrypted?: boolean;
     db_mirror?: boolean;
+    job_hidden?: boolean;
     doc?: string;
     default?: string;
     format?: string;

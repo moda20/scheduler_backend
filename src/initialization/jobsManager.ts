@@ -58,6 +58,13 @@ export const fullStartAJob = async (job: JobDTO) => {
   } else {
     logger.error("Error when starting Job");
     logger.error(d);
+    const sysLog = eventLog(LogEventNames.SysLogEvent);
+    sysLog.error(
+      `Error when starting job ${job.getName()} ${JSON.stringify(d, null, 4)}`,
+      {
+        eventName: "JOB_START_ERROR",
+      },
+    );
     throw d;
   }
 };
