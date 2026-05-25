@@ -165,7 +165,9 @@ exports.Prisma.Proxy_jobScalarFieldEnum = {
   job_id: 'job_id',
   proxy_id: 'proxy_id',
   created_at: 'created_at',
-  updated_at: 'updated_at'
+  updated_at: 'updated_at',
+  use_count: 'use_count',
+  injection_count: 'injection_count'
 };
 
 exports.Prisma.Schedule_jobScalarFieldEnum = {

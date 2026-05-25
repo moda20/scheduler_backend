@@ -17,6 +17,7 @@ import {
   jobNotificationTypes,
   JobNotificationTypesType,
 } from "@typesDef/notifications";
+import { jobProxyConfig } from "@typesDef/proxies";
 import defaultAxiosInstance from "@utils/httpRequestConfig";
 import * as jobConsumerUtils from "@utils/jobConsumerUtils";
 import {
@@ -87,11 +88,13 @@ export class JobConsumer extends Consumer {
     );
   }
 
-  async injectProxies() {
+  async injectProxies(proxyConfig?: jobProxyConfig) {
     return injectProxy({
       jobId: Number(this.job?.id),
       axiosInstance: this.axios,
       logger: (v: any) => this.logEvent(v),
+      proxyStrategy: proxyConfig?.proxyStrategy,
+      targetProxyId: proxyConfig?.targetProxyId,
     })
       .then((proxy) => {
         if (proxy) {
@@ -230,7 +233,8 @@ export class JobConsumer extends Consumer {
     const { job, jobLog } = this.jobInputParse(j, jl);
     this.job = job;
     this.jobLog = jobLog;
-    await this.injectProxies();
+    const proxyConfig = job.param?.proxyConfig;
+    await this.injectProxies(proxyConfig);
     // initializing the notification service to work with the new structure of services
     await this.initializeNotificationService(job, jobLog);
     try {

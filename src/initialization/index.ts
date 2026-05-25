@@ -1,8 +1,7 @@
-import config from "@config/config";
 import { syncConfigWithDB } from "@config/config.service";
 import type { PrismaClient } from "@generated/prisma";
 import { PrismaClient as BasePrismaClient } from "@generated/prisma_base";
-import { seedBaseDatabase } from "@initialization/dbSeed";
+import { seedBaseDatabase, seedSystemJobs } from "@initialization/dbSeed";
 import currentRunsManager from "@utils/CurrentRunsManager";
 import logger from "@utils/loggers";
 
@@ -32,6 +31,7 @@ export const initialize = async () => {
   }
   logger.info("Config synced with DB");
   await seedBaseDatabase();
+  await seedSystemJobs();
   currentRunsManager.init();
   const managerResults = await start();
   logger.info("Schedule manager initialized");

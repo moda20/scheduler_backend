@@ -8,10 +8,12 @@ import {
   getAllProxies,
   getProxy,
   removeProxyFromJob,
+  testProxyViaTheAPI,
   updateProxy,
 } from "@repositories/proxies";
 import { createElysia } from "@utils/createElysia";
 import qs from "qs";
+import { z } from "zod";
 
 export const proxiesController = createElysia({ prefix: "/proxies" })
   .onBeforeHandle(({ set }) => {
@@ -125,6 +127,18 @@ export const proxiesController = createElysia({ prefix: "/proxies" })
       body: t.Object({
         id: t.Number(),
         job_id: t.Number(),
+      }),
+    },
+  )
+  .post(
+    "/testProxy",
+    async ({ body }) => {
+      const { status } = await testProxyViaTheAPI(Number(body.id));
+      return status;
+    },
+    {
+      body: z.object({
+        id: z.coerce.number().positive().int(),
       }),
     },
   );

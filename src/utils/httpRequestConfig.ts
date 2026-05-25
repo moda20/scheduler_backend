@@ -1,5 +1,5 @@
 import config from "@config/config";
-import axios from "axios";
+import axios, { CreateAxiosDefaults } from "axios";
 
 axios.interceptors.response.use(
   (response) => response,
@@ -8,7 +8,7 @@ axios.interceptors.response.use(
 
 export default axios;
 
-const createHttpService = (config: any) => {
+const createHttpService = (config: CreateAxiosDefaults) => {
   const newService = axios.create(config);
   newService.interceptors.response.use(
     (response) => response,
@@ -41,5 +41,8 @@ export const NtfyHttpService = createHttpService({
   headers: {
     Authorization: `Bearer ${config.get("notifications.ntfy.token")}`,
   },
+  timeout: 60000,
+});
+export const ProxyTestingHttpService = axios.create({
   timeout: 60000,
 });
