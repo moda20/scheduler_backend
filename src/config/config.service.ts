@@ -107,7 +107,11 @@ export const getConvictSchemaProperties = ({
     if (onlyMirroredValues && !propertiesValues[pvk].db_mirror) {
       delete propertiesValues[pvk];
     }
-    if (!withJobHiddenProperties && propertiesValues[pvk].job_hidden) {
+    if (
+      !withJobHiddenProperties &&
+      propertiesValues[pvk] &&
+      propertiesValues[pvk].job_hidden
+    ) {
       delete propertiesValues[pvk];
     }
   });
