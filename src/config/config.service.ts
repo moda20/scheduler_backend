@@ -1,6 +1,10 @@
 import config from "@config/config";
 import { deleteConfig, getAllConfigs, saveConfig } from "@repositories/configs";
-import { FlattenedProperties } from "@typesDef/models/config";
+import {
+  FlattenedProperties,
+  getConfigWithDBEncryptionStatusInterface,
+  getConvictSchemaPropertiesInputInterface,
+} from "@typesDef/models/config";
 import { toSafeString } from "@utils/convictUtils";
 import logger from "@utils/loggers";
 
@@ -31,6 +35,7 @@ const flattenedProperties = (inputObj: any) => {
 
 export const ObjectifyFlattenedProperties = (
   flattenedProperties: FlattenedProperties,
+  replacer: (value: FlattenedProperties[string]) => any = (value) => value,
 ) => {
   const parsedCnfs = {} as { [key: string]: any };
   Object.keys(flattenedProperties)
@@ -44,7 +49,7 @@ export const ObjectifyFlattenedProperties = (
       let current = parsedCnfs;
       input.key.forEach((e, i) => {
         if (i === input.key.length - 1) {
-          current[e] = input.value;
+          current[e] = replacer(input.value);
         } else {
           if (!(e in current)) {
             current[e] = {};
@@ -68,10 +73,8 @@ const verifyMasterKey = () => {
 export const getConvictSchemaProperties = ({
   encryptedValues = true,
   onlyMirroredValues = true,
-}: {
-  encryptedValues?: boolean;
-  onlyMirroredValues?: boolean;
-} = {}) => {
+  withJobHiddenProperties = true,
+}: getConvictSchemaPropertiesInputInterface = {}) => {
   const propertiesValues: FlattenedProperties = flattenedProperties(
     config.getProperties(),
   );
@@ -82,6 +85,7 @@ export const getConvictSchemaProperties = ({
       return [e, flattenedSchema[e]];
     }),
   );
+
   // injecting extra properties from schema into property values;
   // TODO see if this can be suggested to convict in a PR
   Object.keys(propertiesValues).forEach((pvk) => {
@@ -94,6 +98,8 @@ export const getConvictSchemaProperties = ({
       schemaValues[`${pvk}_db_mirror`]?.value ?? true; // save to db by default
     propertiesValues[pvk].format =
       schemaValues[`${pvk}_format`]?.value ?? "string"; // save to db by default
+    propertiesValues[pvk].job_hidden =
+      schemaValues[`${pvk}_job_hidden`]?.value ?? false; // hide from jobs, can be different from db_mirror values
     if (schemaValues[`${pvk}_doc`]) {
       propertiesValues[pvk].base = true;
     }
@@ -105,15 +111,26 @@ export const getConvictSchemaProperties = ({
     if (onlyMirroredValues && !propertiesValues[pvk].db_mirror) {
       delete propertiesValues[pvk];
     }
+
+    if (
+      !withJobHiddenProperties &&
+      propertiesValues[pvk] &&
+      propertiesValues[pvk].job_hidden
+    ) {
+      delete propertiesValues[pvk];
+    }
   });
 
   return propertiesValues;
 };
 
-export const getConfigWithDBEncryptionStatus = async () => {
+export const getConfigWithDBEncryptionStatus = async (
+  SchemaPropertyConfig?: getConfigWithDBEncryptionStatusInterface,
+) => {
   const configList = getConvictSchemaProperties({
     encryptedValues: false,
     onlyMirroredValues: true,
+    ...(SchemaPropertyConfig ?? {}),
   });
   const configFromDB = (await getAllConfigs()).reduce(
     (p, c) => {
@@ -126,13 +143,19 @@ export const getConfigWithDBEncryptionStatus = async () => {
     {} as { [key: string]: { value: any; is_encrypted: boolean } },
   );
   for (const cnfKey in configList) {
-    configList[cnfKey].is_encrypted = configFromDB[cnfKey].is_encrypted;
-    if (configList[cnfKey].is_encrypted) {
-      configList[cnfKey].value = "*******************";
+    if (SchemaPropertyConfig?.onlyMirroredValues || configFromDB[cnfKey]) {
+      configList[cnfKey].is_encrypted = configFromDB[cnfKey].is_encrypted;
+      if (configList[cnfKey].is_encrypted) {
+        configList[cnfKey].value = "*******************";
+      }
     }
-    // deleting Notification configs to force them to be updated on the dedicated UI, might change this in the future
-    // depending on the evolution of the backend
-    if (cnfKey.match(/^notifications_(.+)_(.+)/g)) {
+
+    // deleting Notification configs to force them to be updated on the dedicated UI,
+    // Adding a config param for this since we are using it for the job consumer config
+    if (
+      !SchemaPropertyConfig?.returnNotificationServiceConfig &&
+      cnfKey.match(/^notifications_(.+)_(.+)/g)
+    ) {
       delete configList[cnfKey];
     }
   }

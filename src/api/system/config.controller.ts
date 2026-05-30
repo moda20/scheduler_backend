@@ -18,14 +18,18 @@ export const configController = createElysia({ prefix: "/system/config" })
     ctx.query = qs.parse(new URL(ctx.request.url).search.slice(1));
   })
   .get("/getConfig", async () => {
-    const config = await getConfigWithDBEncryptionStatus();
+    const config = await getConfigWithDBEncryptionStatus({
+      returnNotificationServiceConfig: false,
+    });
     return {
       configArray: ObjectifyFlattenedProperties(config),
       categoriesMap: transposedConfigMap,
     };
   })
   .get("/getCategorizedConfig", async () => {
-    const config = await getConfigWithDBEncryptionStatus();
+    const config = await getConfigWithDBEncryptionStatus({
+      returnNotificationServiceConfig: false,
+    });
     return categorizeConfig(ObjectifyFlattenedProperties(config));
   })
   .post(

@@ -1,4 +1,8 @@
 import config from "@config/config";
+import {
+  getConfigWithDBEncryptionStatus,
+  ObjectifyFlattenedProperties,
+} from "@config/config.service";
 import { handleEvent } from "@repositories/notification";
 import {
   getAllGlobalEventHandlers,
@@ -240,7 +244,15 @@ export class JobConsumer extends Consumer {
     try {
       this.options = {
         utils: jobConsumerUtils,
-        config: config.getProperties(),
+        config: ObjectifyFlattenedProperties(
+          await getConfigWithDBEncryptionStatus({
+            encryptedValues: false,
+            withJobHiddenProperties: false,
+            onlyMirroredValues: false,
+            returnNotificationServiceConfig: true,
+          }),
+          (v) => v?.value ?? v,
+        ),
       };
       await this.injectNotificationServices(
         job?.param?.notificationServices || [],
