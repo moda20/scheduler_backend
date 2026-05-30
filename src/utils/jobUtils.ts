@@ -165,14 +165,26 @@ export const getFromCache = async (fileName: string) => {
  * @param param  A jsonifiable object
  * @returns string
  */
-export const toJSON = (param: any, space?: number): any => {
+export const toJSON = (param: any): any => {
   return JSON.parse(
     JSON.stringify(
       param,
       (key, value) => (typeof value === "bigint" ? value.toString() : value), // return everything else unchanged
-      space,
     ),
   );
+};
+
+export const getCircularReplacer = () => {
+  const seen = new WeakSet();
+  return (key: any, value: any) => {
+    if (typeof value === "object" && value !== null) {
+      if (seen.has(value)) {
+        return "[Circular]";
+      }
+      seen.add(value);
+    }
+    return value;
+  };
 };
 
 /**
