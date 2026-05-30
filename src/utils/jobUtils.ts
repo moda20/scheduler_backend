@@ -165,11 +165,12 @@ export const getFromCache = async (fileName: string) => {
  * @param param  A jsonifiable object
  * @returns string
  */
-export const toJSON = (param: any): any => {
+export const toJSON = (param: any, space?: number): any => {
   return JSON.parse(
     JSON.stringify(
       param,
       (key, value) => (typeof value === "bigint" ? value.toString() : value), // return everything else unchanged
+      space,
     ),
   );
 };

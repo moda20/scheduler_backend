@@ -2,6 +2,7 @@ import { JobConsumer } from "@jobConsumer/jobConsumer";
 import { jobEventLog, LogEventNames } from "@typesDef/api/jobs";
 import { JobDTO, jobStatus } from "@typesDef/models/job";
 import currentRunsManager from "@utils/CurrentRunsManager";
+import { toJSON } from "@utils/jobUtils";
 import logger, { eventLog, JobLogger } from "@utils/loggers";
 import schedulerManager from "schedule-manager";
 const { ScheduleJobEventBus, ScheduleJobLogEventBus, ScheduleJobManager } =
@@ -59,12 +60,9 @@ export const fullStartAJob = async (job: JobDTO) => {
     logger.error("Error when starting Job");
     logger.error(d);
     const sysLog = eventLog(LogEventNames.SysLogEvent);
-    sysLog.error(
-      `Error when starting job ${job.getName()} ${JSON.stringify(d, null, 4)}`,
-      {
-        eventName: "JOB_START_ERROR",
-      },
-    );
+    sysLog.error(`Error when starting job ${job.getName()} ${toJSON(d, 4)}`, {
+      eventName: "JOB_START_ERROR",
+    });
     throw d;
   }
 };

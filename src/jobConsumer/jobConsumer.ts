@@ -1,6 +1,6 @@
 import config from "@config/config";
 import {
-  getConvictSchemaProperties,
+  getConfigWithDBEncryptionStatus,
   ObjectifyFlattenedProperties,
 } from "@config/config.service";
 import { handleEvent } from "@repositories/notification";
@@ -245,10 +245,13 @@ export class JobConsumer extends Consumer {
       this.options = {
         utils: jobConsumerUtils,
         config: ObjectifyFlattenedProperties(
-          getConvictSchemaProperties({
+          await getConfigWithDBEncryptionStatus({
             encryptedValues: false,
             withJobHiddenProperties: false,
+            onlyMirroredValues: false,
+            returnNotificationServiceConfig: true,
           }),
+          (v) => v?.value ?? v,
         ),
       };
       await this.injectNotificationServices(

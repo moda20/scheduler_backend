@@ -10,3 +10,14 @@ export interface FlattenedProperties {
     base?: boolean;
   };
 }
+
+export interface getConvictSchemaPropertiesInputInterface {
+  encryptedValues?: boolean;
+  onlyMirroredValues?: boolean;
+  withJobHiddenProperties?: boolean;
+}
+
+export interface getConfigWithDBEncryptionStatusInterface
+  extends getConvictSchemaPropertiesInputInterface {
+  returnNotificationServiceConfig?: boolean;
+}
