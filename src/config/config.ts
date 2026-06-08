@@ -320,6 +320,7 @@ const config = convict({
       env: "MASTER_ENCRYPTION_KEY",
       sensitive: true,
       db_mirror: false,
+      job_hidden: true,
     },
   },
   version: {

@@ -139,7 +139,16 @@ export const toSafeString = (input: any) => {
 
 // A human-readable map of config categories, might change to the convict schema if possible
 const categoriesMap: any = {
-  system: ["DB", "baseDB", "env", "appName", "server", "jobs", "swaggerServer"],
+  system: [
+    "DB",
+    "baseDB",
+    "env",
+    "appName",
+    "server",
+    "jobs",
+    "swaggerServer",
+    "proxies",
+  ],
   logging: ["files"],
   notifications: ["notifications", "grafana"],
 };

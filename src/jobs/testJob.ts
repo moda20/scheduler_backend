@@ -11,6 +11,7 @@ class TestJob extends JobConsumer {
     this.logEvent("will sleep");
     this.emitError("testing error");
     this.emitWarning("texting warning");
+    this.logEvent(this.options?.config);
     await this.options?.utils?.sleep(15);
     this.logEvent("finished sleeping");
     await this.exportResultsToFile({

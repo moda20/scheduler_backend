@@ -174,6 +174,19 @@ export const toJSON = (param: any): any => {
   );
 };
 
+export const getCircularReplacer = () => {
+  const seen = new WeakSet();
+  return (key: any, value: any) => {
+    if (typeof value === "object" && value !== null) {
+      if (seen.has(value)) {
+        return "[Circular]";
+      }
+      seen.add(value);
+    }
+    return value;
+  };
+};
+
 /**
  * Find files recursively
  * @param dir
