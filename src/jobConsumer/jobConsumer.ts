@@ -30,7 +30,7 @@ import {
   getFromCache,
   injectNotificationServices,
 } from "@utils/jobUtils";
-import { injectProxy } from "@utils/proxyUtils";
+import { injectProxy, ProxyManager } from "@utils/proxyUtils";
 import type { AxiosInstance } from "axios";
 import scheduleManager, {
   IScheduleJob,
@@ -48,6 +48,7 @@ export class JobConsumer extends Consumer {
   eventHandlers: Partial<{
     [key in JobNotificationTypesType]: JobEventHandlerConfig[];
   }> = {};
+  proxyManager?: ProxyManager;
   constructor() {
     super();
     this.axios = defaultAxiosInstance.create();
@@ -238,7 +239,15 @@ export class JobConsumer extends Consumer {
     this.job = job;
     this.jobLog = jobLog;
     const proxyConfig = job.param?.proxyConfig;
-    await this.injectProxies(proxyConfig);
+    this.proxyManager = new ProxyManager({
+      jobId: job.id!,
+      defaultAxiosInstance: this.axios,
+      proxyStrategy: proxyConfig?.proxyStrategy,
+      targetProxyId: proxyConfig?.targetProxyId,
+      logger: (v) => this.logEvent(v),
+    });
+    await this.proxyManager.injectProxies();
+
     // initializing the notification service to work with the new structure of services
     await this.initializeNotificationService(job, jobLog);
     try {

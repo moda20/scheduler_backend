@@ -5,7 +5,11 @@ import {
   incrementProxyUsage,
 } from "@repositories/proxies";
 import { LogEventNames } from "@typesDef/api/jobs";
-import { proxyPickingStrategy } from "@typesDef/proxies";
+import {
+  ProxyManagerConstructorInterface,
+  proxyPickingStrategy,
+} from "@typesDef/proxies";
+import defaultAxiosInstance from "@utils/httpRequestConfig";
 import { eventLog } from "@utils/loggers";
 import type { AxiosInstance } from "axios";
 import { fetch as bunFetch } from "netbun";
@@ -123,9 +127,73 @@ export const injectProxy = async ({
       };
     } else {
       logger &&
-        logger.warn(
-          `No proxy was picked based on strategy : ${proxyPickingStrategy}`,
-        );
+        logger.warn(`No proxy was picked based on strategy : ${proxyStrategy}`);
     }
   }
 };
+
+export class ProxyManager {
+  jobId: number;
+  defaultAxiosInstance: AxiosInstance;
+  proxyStrategy?: proxyPickingStrategy;
+  targetProxyId?: number;
+  logger?: (data: any) => void;
+  constructor({
+    defaultAxiosInstance,
+    logger,
+    proxyStrategy,
+    targetProxyId,
+    jobId,
+  }: ProxyManagerConstructorInterface) {
+    this.jobId = jobId;
+    this.defaultAxiosInstance = defaultAxiosInstance;
+    this.proxyStrategy = proxyStrategy;
+    this.targetProxyId = targetProxyId;
+    this.logger = logger;
+  }
+
+  async injectProxies() {
+    return injectProxy({
+      jobId: this.jobId,
+      axiosInstance: this.defaultAxiosInstance,
+      logger: this.logger,
+      proxyStrategy: this.proxyStrategy,
+      targetProxyId: this.targetProxyId,
+    });
+  }
+
+  async reInjectProxies(
+    newStrategy?: proxyPickingStrategy,
+    newProxyTargetId?: number,
+  ) {
+    return injectProxy({
+      jobId: this.jobId,
+      axiosInstance: this.defaultAxiosInstance,
+      logger: this.logger,
+      proxyStrategy: newStrategy ?? this.proxyStrategy,
+      targetProxyId: newProxyTargetId ?? this.targetProxyId,
+    });
+  }
+
+  async injectProxiesIntoANewClient(
+    targetInstance?: AxiosInstance,
+    proxyStrategy?: proxyPickingStrategy,
+    newProxyTargetId?: number,
+  ) {
+    const newInstance = targetInstance ?? defaultAxiosInstance.create();
+    await injectProxy({
+      jobId: this.jobId,
+      axiosInstance: newInstance,
+      logger: this.logger,
+      proxyStrategy: proxyStrategy ?? this.proxyStrategy,
+      targetProxyId: newProxyTargetId ?? this.targetProxyId,
+    });
+    return newInstance;
+  }
+
+  async uninjectProxies(targetInstance: AxiosInstance) {
+    delete targetInstance.defaults.env?.fetch;
+    delete targetInstance.defaults.proxy;
+    return targetInstance;
+  }
+}
