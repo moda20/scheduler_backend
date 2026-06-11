@@ -17,5 +17,5 @@ export interface ProxyManagerConstructorInterface {
   defaultAxiosInstance: AxiosInstance;
   proxyStrategy?: proxyPickingStrategy;
   targetProxyId?: number;
-  logger?: (data: any) => void;
+  logger: (data: any) => void;
 }

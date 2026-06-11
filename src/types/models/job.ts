@@ -1,6 +1,7 @@
 import config from "@config/config";
 import { schedule_job } from "@generated/prisma";
 import * as JobConsumerUtils from "@utils/jobConsumerUtils";
+import { ProxyManager } from "@utils/proxyUtils";
 import { IScheduleJob, IScheduleJobLog } from "schedule-manager";
 import { ScheduleJobLog } from "schedule-manager/Classes/Entities/ScheduleJobLog";
 import { ScheduleJobTable } from "schedule-manager/dist/Classes/Entities/ScheduleJob";
