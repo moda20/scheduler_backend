@@ -211,13 +211,14 @@ export class ProxyManager {
     delete targetInstance.defaults.proxy;
     if (this.instanceMap.has(targetInstance)) {
       const interceptorId = this.instanceMap.get(targetInstance);
-      if (!interceptorId) {
+      if (interceptorId === undefined) {
         this.logger(
           "A proxy interceptor id was not found, even though the it was registered",
         );
         return;
       }
       targetInstance.interceptors.request.eject(interceptorId);
+      this.instanceMap.delete(targetInstance);
     }
     return targetInstance;
   }
