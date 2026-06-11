@@ -224,6 +224,7 @@ export class JobConsumer extends Consumer {
     // and assign proxies ot it using the general manager.
 
     // if there is case where there is an existing proxyManager in this instance, the previous one will have it's axios interceptors
+    // cleared
     if (this.proxyManager) {
       this.proxyManager.clearInterceptors();
     }
