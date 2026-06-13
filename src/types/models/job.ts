@@ -1,4 +1,3 @@
-import config from "@config/config";
 import { schedule_job } from "@generated/prisma";
 import * as JobConsumerUtils from "@utils/jobConsumerUtils";
 import { IScheduleJob, IScheduleJobLog } from "schedule-manager";

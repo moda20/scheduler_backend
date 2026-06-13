@@ -21,7 +21,6 @@ import {
   jobNotificationTypes,
   JobNotificationTypesType,
 } from "@typesDef/notifications";
-import { jobProxyConfig } from "@typesDef/proxies";
 import defaultAxiosInstance from "@utils/httpRequestConfig";
 import * as jobConsumerUtils from "@utils/jobConsumerUtils";
 import {
@@ -30,7 +29,7 @@ import {
   getFromCache,
   injectNotificationServices,
 } from "@utils/jobUtils";
-import { injectProxy } from "@utils/proxyUtils";
+import { ProxyManager } from "@utils/proxyUtils";
 import type { AxiosInstance } from "axios";
 import scheduleManager, {
   IScheduleJob,
@@ -48,6 +47,7 @@ export class JobConsumer extends Consumer {
   eventHandlers: Partial<{
     [key in JobNotificationTypesType]: JobEventHandlerConfig[];
   }> = {};
+  proxyManager?: ProxyManager;
   constructor() {
     super();
     this.axios = defaultAxiosInstance.create();
@@ -90,27 +90,6 @@ export class JobConsumer extends Consumer {
       targetNotificationService,
       serviceConfig,
     );
-  }
-
-  async injectProxies(proxyConfig?: jobProxyConfig) {
-    return injectProxy({
-      jobId: Number(this.job?.id),
-      axiosInstance: this.axios,
-      logger: (v: any) => this.logEvent(v),
-      proxyStrategy: proxyConfig?.proxyStrategy,
-      targetProxyId: proxyConfig?.targetProxyId,
-    })
-      .then((proxy) => {
-        if (proxy) {
-          this.logEvent(`proxy ${proxy.proxy_ip}:${proxy.proxy_port} injected`);
-        } else {
-          this.logEvent("no proxy to inject found");
-        }
-      })
-      .catch((err) => {
-        this.logEvent("error injecting proxies");
-        this.logEvent(err);
-      });
   }
   async injectNotificationServices(services: number[]) {
     this.notificationServices = await injectNotificationServices(
@@ -238,7 +217,29 @@ export class JobConsumer extends Consumer {
     this.job = job;
     this.jobLog = jobLog;
     const proxyConfig = job.param?.proxyConfig;
-    await this.injectProxies(proxyConfig);
+    // Setting the object proxyManager to a new manager for each run, can cause issues for overlapping cron based runs
+    // when proxies change between the execution time (based on random or least X strategy, or if the proxies linked change)
+    // This is due to the fact that for cron based runs we use a singular instance of the consumer.
+    // IF this can create issues for your consumer scripts, it's better to use a new axios instance that you control in your own code
+    // and assign proxies ot it using the general manager.
+
+    // if there is case where there is an existing proxyManager in this instance, the previous one will have it's axios interceptors
+    // cleared
+    if (this.proxyManager) {
+      this.proxyManager.clearInterceptors();
+    }
+    this.proxyManager = new ProxyManager({
+      jobId: job.id!,
+      defaultAxiosInstance: this.axios,
+      proxyStrategy: proxyConfig?.proxyStrategy,
+      targetProxyId: proxyConfig?.targetProxyId,
+      logger: (v) => this.logEvent(v),
+    });
+    await this.proxyManager.injectProxies().catch((err) => {
+      this.logEvent("error injecting proxies, proceeding without proxies");
+      this.logEvent(err);
+    });
+
     // initializing the notification service to work with the new structure of services
     await this.initializeNotificationService(job, jobLog);
     try {

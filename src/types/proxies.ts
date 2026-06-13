@@ -1,3 +1,5 @@
+import type { AxiosInstance } from "axios";
+
 export enum proxyPickingStrategy {
   RANDOM = "RANDOM",
   ROUND_ROBIN = "ROUND_ROBIN",
@@ -8,4 +10,12 @@ export enum proxyPickingStrategy {
 export interface jobProxyConfig {
   proxyStrategy?: proxyPickingStrategy;
   targetProxyId?: number;
+}
+
+export interface ProxyManagerConstructorInterface {
+  jobId: number;
+  defaultAxiosInstance: AxiosInstance;
+  proxyStrategy?: proxyPickingStrategy;
+  targetProxyId?: number;
+  logger: (data: any) => void;
 }
