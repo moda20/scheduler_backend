@@ -71,6 +71,7 @@ model proxy_job {
 
   @@index([job_id], map: "job_id")
   @@index([proxy_id], map: "proxy_id")
+  @@unique([job_id, proxy_id])
 }
 
 model schedule_job {
