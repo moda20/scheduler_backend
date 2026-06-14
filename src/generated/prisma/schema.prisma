@@ -69,6 +69,7 @@ model proxy_job {
   schedule_job    schedule_job @relation(fields: [job_id], references: [job_id], onDelete: NoAction, onUpdate: NoAction, map: "proxy_job_ibfk_1")
   proxy           proxy        @relation(fields: [proxy_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "proxy_job_ibfk_2")
 
+  @@unique([job_id, proxy_id])
   @@index([job_id], map: "job_id")
   @@index([proxy_id], map: "proxy_id")
 }

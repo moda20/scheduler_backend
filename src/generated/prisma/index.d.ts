@@ -9250,6 +9250,7 @@ export namespace Prisma {
 
   export type proxy_jobWhereUniqueInput = Prisma.AtLeast<{
     id?: number
+    job_id_proxy_id?: proxy_jobJob_idProxy_idCompoundUniqueInput
     AND?: proxy_jobWhereInput | proxy_jobWhereInput[]
     OR?: proxy_jobWhereInput[]
     NOT?: proxy_jobWhereInput | proxy_jobWhereInput[]
@@ -9261,7 +9262,7 @@ export namespace Prisma {
     injection_count?: IntFilter<"proxy_job"> | number
     schedule_job?: XOR<Schedule_jobScalarRelationFilter, schedule_jobWhereInput>
     proxy?: XOR<ProxyScalarRelationFilter, proxyWhereInput>
-  }, "id">
+  }, "id" | "job_id_proxy_id">
 
   export type proxy_jobOrderByWithAggregationInput = {
     id?: SortOrder
@@ -10476,6 +10477,11 @@ export namespace Prisma {
   export type ProxyScalarRelationFilter = {
     is?: proxyWhereInput
     isNot?: proxyWhereInput
+  }
+
+  export type proxy_jobJob_idProxy_idCompoundUniqueInput = {
+    job_id: number
+    proxy_id: number
   }
 
   export type proxy_jobCountOrderByAggregateInput = {
