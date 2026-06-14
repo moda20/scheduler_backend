@@ -53,18 +53,26 @@ export const proxiesController = createElysia({ prefix: "/proxies" })
       }),
     },
   )
-  .get("/getJobProxies", ({ query }) => {
-    return getJobProxies(Number(query.jobId ?? 0)).then((data) => {
-      return data?.proxies?.map((e) => {
-        return {
-          id: e.id,
-          proxy_id: e.proxy_id,
-          proxy_ip: e.proxy.proxy_ip,
-          proxy_port: e.proxy.proxy_port,
-        };
+  .get(
+    "/getJobProxies",
+    ({ query }) => {
+      return getJobProxies(query.jobId).then((data) => {
+        return data?.proxies?.map((e) => {
+          return {
+            id: e.id,
+            proxy_id: e.proxy_id,
+            proxy_ip: e.proxy.proxy_ip,
+            proxy_port: e.proxy.proxy_port,
+          };
+        });
       });
-    });
-  })
+    },
+    {
+      query: z.object({
+        jobId: z.coerce.number(),
+      }),
+    },
+  )
   .post(
     "/addProxy",
     ({ body }) => {
@@ -139,7 +147,7 @@ export const proxiesController = createElysia({ prefix: "/proxies" })
     },
     {
       body: z.object({
-        job_id: z.coerce.number(),
+        job_id: z.coerce.number().positive(),
         proxy_ids: z.array(z.coerce.number().positive()),
       }),
     },
