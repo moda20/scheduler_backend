@@ -190,6 +190,39 @@ export const addProxyToJob = async (id: number, job_ids: number[]) => {
   });
 };
 
+export const addProxiesToJob = async (jobId: number, proxyIds: number[]) => {
+  const existingJobIdLinks = await prisma.proxy_job.findMany({
+    where: {
+      job_id: jobId,
+    },
+  });
+
+  const linksToDelete = existingJobIdLinks.filter(
+    (e) => !proxyIds.includes(e.proxy_id),
+  );
+  const linksToCreate = proxyIds.filter(
+    (e) => !existingJobIdLinks.map((e) => e.proxy_id).includes(e),
+  );
+
+  return prisma.$transaction(async (tx) => {
+    await tx.proxy_job.createMany({
+      data: linksToCreate.map((proxyId) => ({
+        proxy_id: proxyId,
+        job_id: jobId,
+      })),
+    });
+
+    await tx.proxy_job.deleteMany({
+      where: {
+        job_id: jobId,
+        proxy_id: {
+          in: linksToDelete.map((e) => e.proxy_id),
+        },
+      },
+    });
+  });
+};
+
 export const incrementProxyInjection = (proxyJobId: number) => {
   return prisma.proxy_job.update({
     where: {

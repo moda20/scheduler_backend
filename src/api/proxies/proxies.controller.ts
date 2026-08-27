@@ -2,10 +2,12 @@ import { t } from "elysia";
 
 import { proxy_status } from "@generated/prisma";
 import {
+  addProxiesToJob,
   addProxy,
   addProxyToJob,
   deleteProxy,
   getAllProxies,
+  getJobProxies,
   getProxy,
   removeProxyFromJob,
   testProxyViaTheAPI,
@@ -48,6 +50,26 @@ export const proxiesController = createElysia({ prefix: "/proxies" })
     {
       query: t.Object({
         id: t.Optional(t.Number()),
+      }),
+    },
+  )
+  .get(
+    "/getJobProxies",
+    ({ query }) => {
+      return getJobProxies(query.jobId).then((data) => {
+        return data?.proxies?.map((e) => {
+          return {
+            id: e.id,
+            proxy_id: e.proxy_id,
+            proxy_ip: e.proxy.proxy_ip,
+            proxy_port: e.proxy.proxy_port,
+          };
+        });
+      });
+    },
+    {
+      query: z.object({
+        jobId: z.coerce.number(),
       }),
     },
   )
@@ -115,6 +137,18 @@ export const proxiesController = createElysia({ prefix: "/proxies" })
       body: t.Object({
         id: t.Number(),
         job_ids: t.Array(t.Number()),
+      }),
+    },
+  )
+  .post(
+    "/addProxiesToJob",
+    ({ body }) => {
+      return addProxiesToJob(Number(body.job_id ?? 0), body.proxy_ids);
+    },
+    {
+      body: z.object({
+        job_id: z.coerce.number().positive(),
+        proxy_ids: z.array(z.coerce.number().positive()),
       }),
     },
   )
